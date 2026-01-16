@@ -5,6 +5,7 @@ import com.bank.customer_service.dto.request.CustomerCreateRequest;
 import com.bank.customer_service.dto.request.KycVerifyRequest;
 import com.bank.customer_service.dto.response.ApiSuccessResponse;
 import com.bank.customer_service.dto.response.CustomerResponse;
+import com.bank.customer_service.security.AuthUser;
 import com.bank.customer_service.entity.Customer;
 import com.bank.customer_service.enums.CustomerBlockReason;
 import com.bank.customer_service.enums.CustomerCloseReason;
@@ -16,9 +17,11 @@ import com.bank.customer_service.repository.CustomerRepository;
 import com.bank.customer_service.service.CustomerService;
 import com.bank.customer_service.util.CustomerAuditUtil;
 import com.bank.customer_service.util.MaskingUtil;
+import com.bank.customer_service.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -65,10 +68,24 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public CustomerResponse getById(UUID id) {
-        return customerRepo.findById(id)
-                .map(CustomerMapper::toResponse)
+
+        AuthUser user = SecurityUtil.getCurrentUser();
+
+        // 👤 CUSTOMER → ONLY OWN DATA
+        if (user != null && "ROLE_CUSTOMER".equals(user.getRole())) {
+            if (!id.equals(user.getCustomerId())) {
+                throw BusinessException.accessDenied(
+                        "You are not allowed to access other customer data"
+                );
+            }
+        }
+
+        Customer customer = customerRepo.findById(id)
                 .orElseThrow(() -> BusinessException.customerNotFound(id));
+
+        return CustomerMapper.toResponse(customer);
     }
+
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
@@ -103,23 +120,26 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerStatus oldStatus = customer.getStatus();
         customer.changeStatus(newStatus);
+
+        AuthUser actor = SecurityUtil.getCurrentUser();
+
         CustomerAuditUtil.logStatusChange(
                 auditRepo,
                 id,
                 oldStatus.name(),
                 newStatus.name(),
-                reason,
-                "ADMIN"
+                actor != null ? actor.getUsername() : "SYSTEM",
+                actor != null ? actor.getRole() : "SYSTEM",
+                reason
         );
 
-        return ApiSuccessResponse.builder()
-                .message("Customer status updated successfully")
-                .customerId(id)
-                .oldStatus(oldStatus.name())
-                .newStatus(newStatus.name())
-                .reason(reason)
-                .timestamp(LocalDateTime.now())
-                .build();
+        return ApiSuccessResponse.success(
+                "Customer status updated successfully",
+                id,
+                oldStatus.name(),
+                newStatus.name(),
+                reason
+        );
     }
 
     @Override

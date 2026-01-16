@@ -19,7 +19,7 @@ public class CustomerAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "BINARY(16)", nullable = false)
     private UUID customerId;
 
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class CustomerAudit {
     private String performedBy;
 
     @Column(nullable = false)
-    private String performedByType;
+    private String performedByRole;
 
     @Column(nullable = false)
     private String reason;

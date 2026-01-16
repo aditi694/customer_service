@@ -1,5 +1,6 @@
 package com.bank.customer_service.util;
 
+import com.bank.customer_service.security.AuthUser;
 import com.bank.customer_service.entity.CustomerAudit;
 import com.bank.customer_service.enums.KycMethod;
 import com.bank.customer_service.enums.KycStatus;
@@ -10,40 +11,45 @@ import java.util.UUID;
 
 public final class CustomerAuditUtil {
 
-    private CustomerAuditUtil() {
-    }
+    private CustomerAuditUtil() {}
 
-    public static void logCreate(CustomerAuditRepository repo, UUID customerId) {
+    public static void logCreate(
+            CustomerAuditRepository repo,
+            UUID customerId
+    ) {
         repo.save(CustomerAudit.builder()
-                .customerId(customerId)
                 .action("CUSTOMER_CREATED")
+                .customerId(customerId)
                 .newStatus("ACTIVE")
                 .performedBy("SYSTEM")
-                .performedByType("SYSTEM")
+                .performedByRole("SYSTEM")   // ✅ FIX
                 .reason("Customer created")
                 .timestamp(LocalDateTime.now())
                 .build());
     }
+
 
     public static void logStatusChange(
             CustomerAuditRepository repo,
             UUID customerId,
             String oldStatus,
             String newStatus,
-            String reason,
-            String performedBy
+            String performedBy,
+            String performedByRole,
+            String reason
     ) {
         repo.save(CustomerAudit.builder()
-                .customerId(customerId)
                 .action("CUSTOMER_STATUS_CHANGED")
+                .customerId(customerId)
                 .oldStatus(oldStatus)
                 .newStatus(newStatus)
                 .performedBy(performedBy)
-                .performedByType("HUMAN")
+                .performedByRole(performedByRole)
                 .reason(reason)
                 .timestamp(LocalDateTime.now())
                 .build());
     }
+
 
     public static void logKycVerification(
             CustomerAuditRepository repo,
@@ -60,7 +66,7 @@ public final class CustomerAuditUtil {
                         .oldStatus("PENDING")
                         .newStatus(status.name())
                         .performedBy(performedBy)
-                        .performedByType("HUMAN")
+                        .performedByRole("HUMAN")
                         .reason(method.name() + (remarks != null ? " - " + remarks : ""))
                         .timestamp(LocalDateTime.now())
                         .build()

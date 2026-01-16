@@ -2,6 +2,7 @@ package com.bank.customer_service.exception;
 
 import com.bank.customer_service.enums.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,19 +43,43 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiErrorResponse> handleGenericException(
+//            Exception ex,
+//            HttpServletRequest request
+//    ) {
+//        ApiErrorResponse response = ApiErrorResponse.builder()
+//                .errorCode(ErrorCode.INTERNAL_SERVER_ERROR)
+//                .message("Something went wrong. Please try again later.")
+//                .status(500)
+//                .path(request.getRequestURI())
+//                .timestamp(LocalDateTime.now())
+//                .build();
+//
+//        return ResponseEntity.internalServerError().body(response);
+//    }
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(
+    public ResponseEntity<ApiErrorResponse> handleAll(
             Exception ex,
             HttpServletRequest request
     ) {
+
+        // 🔥 As you want – stack trace print
+        ex.printStackTrace();
+
         ApiErrorResponse response = ApiErrorResponse.builder()
                 .errorCode(ErrorCode.INTERNAL_SERVER_ERROR)
-                .message("Something went wrong. Please try again later.")
-                .status(500)
+                .message(ex.getMessage() != null
+                        ? ex.getMessage()
+                        : "Something went wrong. Please try again later.")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.internalServerError().body(response);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(response);
     }
+
+
 }
