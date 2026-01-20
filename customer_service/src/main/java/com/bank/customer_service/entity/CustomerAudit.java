@@ -5,38 +5,19 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 @Entity
 @Table(name = "customer_audit")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class CustomerAudit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(columnDefinition = "BINARY(16)", nullable = false)
     private UUID customerId;
-
-    @Column(nullable = false)
     private String action;
-
-    private String oldStatus;
-    private String newStatus;
-
-    @Column(nullable = false)
-    private String performedBy;
-
-    @Column(nullable = false)
-    private String performedByRole;
-
-    @Column(nullable = false)
     private String reason;
-
-    @Column(nullable = false)
+    private String performedBy;
     private LocalDateTime timestamp;
 }

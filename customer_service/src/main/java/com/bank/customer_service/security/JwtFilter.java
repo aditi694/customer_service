@@ -1,7 +1,6 @@
 package com.bank.customer_service.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.io.IOException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,54 +11,65 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
 
-    public JwtFilter(JwtUtil jwtUtil,
-                     CustomUserDetailsService userDetailsService) {
+    public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException, java.io.IOException {
+            HttpServletRequest req,
+            HttpServletResponse res,
+            FilterChain chain
+    ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String header = req.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-
-            String token = authHeader.substring(7);
-            Claims claims = jwtUtil.validateToken(token);
-
-            String username = claims.get("username", String.class);
-            String role = claims.get("role", String.class);
-            String customerIdStr = claims.get("customerId", String.class);
-
-            UUID customerId = customerIdStr != null ? UUID.fromString(customerIdStr) : null;
-
-            AuthUser authUser = new AuthUser(username, role, customerId);
-
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            authUser,
-                            null,
-                            List.of(new SimpleGrantedAuthority(role))
-                    );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        // 🔹 No token → just continue (Spring will decide)
+        if (header == null || !header.startsWith("Bearer ")) {
+            chain.doFilter(req, res);
+            return;
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            String token = header.substring(7);
+
+            // validate token
+            String username = jwtUtil.validate(token);
+
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            null,
+                            List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                    );
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            chain.doFilter(req, res);
+
+        } catch (JwtException | IllegalArgumentException ex) {
+
+            // ❗ VERY IMPORTANT
+            SecurityContextHolder.clearContext();
+
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.setContentType("application/json");
+
+            res.getWriter().write("""
+                {
+                  "message": "Invalid or expired authentication token",
+                  "status": 401
+                }
+            """);
+
+        }
     }
 }

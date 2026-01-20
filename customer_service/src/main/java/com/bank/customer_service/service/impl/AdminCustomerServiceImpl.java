@@ -1,0 +1,332 @@
+package com.bank.customer_service.service.impl;
+
+import com.bank.customer_service.dto.client.AdminCustomerDetail;
+import com.bank.customer_service.dto.client.AdminCustomerSummary;
+import com.bank.customer_service.dto.client.CustomerSummary;
+import com.bank.customer_service.dto.request.AccountSyncRequest;
+import com.bank.customer_service.dto.request.CreateCustomerAccountRequest;
+import com.bank.customer_service.dto.request.KycApprovalRequest;
+import com.bank.customer_service.dto.request.UpdateCustomerRequest;
+import com.bank.customer_service.dto.response.CreateCustomerAccountResponse;
+import com.bank.customer_service.dto.response.KycApprovalResponse;
+import com.bank.customer_service.entity.Customer;
+import com.bank.customer_service.entity.CustomerAudit;
+import com.bank.customer_service.enums.CustomerStatus;
+import com.bank.customer_service.enums.KycStatus;
+import com.bank.customer_service.exception.BusinessException;
+import com.bank.customer_service.repository.CustomerAuditRepository;
+import com.bank.customer_service.repository.CustomerRepository;
+import com.bank.customer_service.service.AdminCustomerService;
+import com.bank.customer_service.validation.CustomerValidator;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import com.bank.customer_service.repository.NomineeRepository;
+import com.bank.customer_service.entity.Nominee;
+
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class AdminCustomerServiceImpl implements AdminCustomerService {
+
+    private final CustomerRepository customerRepo;
+    private final CustomerAuditRepository auditRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
+    private final NomineeRepository nomineeRepository;
+
+
+
+    private static final String ACCOUNT_SERVICE_URL =
+            "http://localhost:8082/api/internal/accounts/create";
+
+    // ================= CREATE CUSTOMER =================
+
+    @Override
+    public CreateCustomerAccountResponse create(CreateCustomerAccountRequest req) {
+
+        // 🔐 VALIDATION (moved out)
+        CustomerValidator.validateCreate(req, customerRepo);
+
+        // 🔹 Generate credentials
+        String accountNumber = generateAccountNumber();
+        String tempPassword = generateTempPassword();
+        String passwordHash = passwordEncoder.encode(tempPassword);
+
+        // 🔹 Create customer entity
+        Customer customer = Customer.builder()
+                .fullName(req.getName())
+                .email(req.getEmail())
+                .phone(req.getPhone())
+                .dob(req.getDob())
+                .gender(req.getGender())
+                .address(req.getAddress())
+                .aadhaarMasked(mask(req.getAadhaar()))
+                .panMasked(mask(req.getPan()))
+                .accountNumber(accountNumber)
+                .passwordHash(passwordHash)
+                .nomineeName(req.getNominee() != null
+                        ? req.getNominee().getName() : null)
+                .nomineeRelation(req.getNominee() != null
+                        ? req.getNominee().getRelation() : null)
+                .nomineeDob(req.getNominee() != null
+                        ? req.getNominee().getDob() : null)
+                .status(CustomerStatus.ACTIVE)
+                .kycStatus(KycStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        Customer saved = customerRepo.save(customer);
+// ✅ SAVE NOMINEE IN NOMINEE TABLE
+        if (req.getNominee() != null) {
+            nomineeRepository.save(
+                    Nominee.builder()
+                            .customerId(saved.getId())
+                            .name(req.getNominee().getName())
+                            .relation(req.getNominee().getRelation())
+                            .dob(req.getNominee().getDob())
+                            .build()
+            );
+        }
+
+        audit("CUSTOMER_CREATED", saved.getId(), "Customer created by admin");
+
+        // 🔹 Sync with Account Service
+        syncWithAccountService(
+                accountNumber,
+                saved.getId(),
+                req.getAccountType() != null ? req.getAccountType() : "SAVINGS",
+                passwordHash
+        );
+
+        return CreateCustomerAccountResponse.builder()
+                .success(true)
+                .customerId(saved.getId().toString())
+                .accountNumber(accountNumber)
+                .password(tempPassword)
+                .kycStatus("PENDING")
+                .build();
+    }
+
+    // ================= SYNC WITH ACCOUNT SERVICE =================
+
+    private void syncWithAccountService(
+            String accountNumber,
+            UUID customerId,
+            String accountType,
+            String passwordHash
+    ) {
+        try {
+            AccountSyncRequest request = AccountSyncRequest.builder()
+                    .accountNumber(accountNumber)
+                    .customerId(customerId.toString())
+                    .accountType(accountType.toUpperCase())
+                    .passwordHash(passwordHash)
+                    .status("ACTIVE")
+                    .balance(0.0)
+                    .primaryAccount(true)
+                    .build();
+
+            restTemplate.postForObject(
+                    ACCOUNT_SERVICE_URL,
+                    request,
+                    String.class
+            );
+
+        } catch (Exception e) {
+            throw BusinessException.internal(
+                    "Customer created but account creation failed"
+            );
+        }
+    }
+
+    // ================= READ =================
+
+    @Override
+    public List<AdminCustomerSummary> getAllCustomers() {
+        return customerRepo.findAll().stream()
+                .filter(c -> c.getStatus() != CustomerStatus.DELETED)
+                .map(this::mapSummary)
+                .toList();
+    }
+
+    @Override
+    public AdminCustomerDetail getCustomerById(UUID customerId) {
+        return mapDetail(getCustomer(customerId));
+    }
+
+    // ================= KYC =================
+
+    @Override
+    public KycApprovalResponse approveOrRejectKyc(
+            UUID customerId,
+            KycApprovalRequest req
+    ) {
+
+        Customer customer = getCustomer(customerId);
+
+        // 🔐 VALIDATION
+        CustomerValidator.validateKyc(customer, req);
+
+        customer.setKycStatus(req.getStatus());
+        customer.setKycVerifiedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        audit("KYC_" + req.getStatus(), customerId, req.getRemarks());
+
+        return new KycApprovalResponse(
+                customer.getId(),
+                customer.getKycStatus(),
+                customer.getKycVerifiedAt()
+        );
+    }
+
+    // ================= BLOCK / UNBLOCK =================
+
+    @Override
+    public AdminCustomerDetail blockCustomer(UUID customerId, String reason) {
+
+        Customer customer = getCustomer(customerId);
+
+        // 🔐 VALIDATION
+        CustomerValidator.validateBlock(customer, reason);
+
+        customer.setStatus(CustomerStatus.BLOCKED);
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        audit("CUSTOMER_BLOCKED", customerId, reason);
+        return mapDetail(customer);
+    }
+
+    @Override
+    public AdminCustomerDetail unblockCustomer(UUID customerId) {
+
+        Customer customer = getCustomer(customerId);
+
+        // 🔐 VALIDATION
+        CustomerValidator.validateUnblock(customer);
+
+        customer.setStatus(CustomerStatus.ACTIVE);
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        audit("CUSTOMER_UNBLOCKED", customerId, "Unblocked");
+        return mapDetail(customer);
+    }
+
+    // ================= UPDATE / DELETE =================
+
+    @Override
+    public void updateCustomer(
+            UUID customerId,
+            UpdateCustomerRequest req
+    ) {
+
+        Customer customer = getCustomer(customerId);
+
+        // 🔐 VALIDATION
+        CustomerValidator.validateUpdate(customer, req);
+
+        if (req.getEmail() != null) customer.setEmail(req.getEmail());
+        if (req.getPhone() != null) customer.setPhone(req.getPhone());
+        if (req.getAddress() != null) customer.setAddress(req.getAddress());
+
+        customer.setUpdatedAt(LocalDateTime.now());
+        audit("CUSTOMER_UPDATED", customerId, "Profile updated");
+
+        mapDetail(customer);
+    }
+
+    @Override
+    public void deleteCustomer(UUID customerId) {
+
+        Customer customer = getCustomer(customerId);
+
+        // 🔐 VALIDATION
+        CustomerValidator.validateDelete(customer);
+
+        customer.setStatus(CustomerStatus.DELETED);
+        audit("CUSTOMER_DELETED", customerId, "Soft delete");
+    }
+
+    // ================= HELPERS =================
+
+    private Customer getCustomer(UUID id) {
+        return customerRepo.findById(id)
+                .orElseThrow(BusinessException::customerNotFound);
+    }
+    public CustomerSummary getCustomerSummary(UUID customerId) {
+
+        Customer c = customerRepo.findById(customerId)
+                .orElseThrow(BusinessException::customerNotFound);
+
+        return CustomerSummary.builder()
+                .customerId(c.getId())
+                .fullName(c.getFullName())
+                .kycStatus(c.getKycStatus().name())
+                .nomineeName(c.getNomineeName())
+                .nomineeRelation(c.getNomineeRelation())
+                .build();
+    }
+
+
+
+    private void audit(String action, UUID customerId, String reason) {
+        auditRepo.save(CustomerAudit.builder()
+                .customerId(customerId)
+                .action(action)
+                .reason(reason)
+                .performedBy("ADMIN")
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
+
+    private AdminCustomerSummary mapSummary(Customer c) {
+        return AdminCustomerSummary.builder()
+                .customerId(c.getId())
+                .fullName(c.getFullName())
+                .email(c.getEmail())
+                .phone(c.getPhone())
+                .status(c.getStatus().name())
+                .kycStatus(c.getKycStatus().name())
+                .createdAt(c.getCreatedAt())
+                .build();
+    }
+
+    private AdminCustomerDetail mapDetail(Customer c) {
+        return AdminCustomerDetail.builder()
+                .customerId(c.getId())
+                .fullName(c.getFullName())
+                .email(c.getEmail())
+                .phone(c.getPhone())
+                .dob(c.getDob())
+                .gender(c.getGender())
+                .address(c.getAddress())
+                .status(c.getStatus())
+                .kycStatus(c.getKycStatus())
+                .kycVerifiedAt(c.getKycVerifiedAt())
+                .createdAt(c.getCreatedAt())
+                .build();
+    }
+
+
+    private String generateAccountNumber() {
+        return "AC" + System.currentTimeMillis();
+    }
+
+    private String generateTempPassword() {
+        return "Temp@" + (1000 + new Random().nextInt(9000));
+    }
+
+    private String mask(String value) {
+        if (value == null || value.length() < 4) return "****";
+        return "****-****-" + value.substring(value.length() - 4);
+    }
+}

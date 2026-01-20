@@ -1,35 +1,32 @@
 package com.bank.customer_service.security;
 
-import com.bank.customer_service.entity.UserEntity;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "CUSTOMER_SERVICE_SECRET_KEY_123456";
-    private static final long EXPIRATION = 86400000;
+    private static final String SECRET =
+            "BANKING_ADMIN_SECRET_12345678901234567890";
 
-    public String generateToken(UserEntity user) {
+    public String generate(String username) {
         return Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim("username", user.getUsername())
-                .claim("role", user.getRole().name())
+                .setSubject(username)
+                .claim("role", "ADMIN")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
                 .compact();
     }
 
-    public Claims validateToken(String token) {
+    public String validate(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .setSigningKey(SECRET.getBytes())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody()
+                .getSubject();
     }
 }

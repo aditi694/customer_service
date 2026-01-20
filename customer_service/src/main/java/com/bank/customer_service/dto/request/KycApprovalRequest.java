@@ -6,15 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class KycVerifyRequest {
-
+@Getter @Setter
+public class KycApprovalRequest {
     @NotNull
-    private KycStatus status;
-
-    @NotNull
-    private KycMethod method;
-
+    private KycStatus status;   // APPROVED / REJECTED
     private String remarks;
 }

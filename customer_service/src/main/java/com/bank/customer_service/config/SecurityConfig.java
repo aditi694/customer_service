@@ -3,7 +3,6 @@ package com.bank.customer_service.config;
 import com.bank.customer_service.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,46 +14,31 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-
-    public SecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
-    }
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, JwtFilter filter)
+            throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
-
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        // 🔥 INTERNAL MICROSERVICE CALLS (ACCOUNT-SERVICE)
+                        .requestMatchers("/api/internal/**").permitAll()
 
-                        // STAFF + ADMIN
-                        .requestMatchers(HttpMethod.POST, "/customers")
-                        .hasAnyRole("STAFF", "ADMIN")
+                        // 🔥 PUBLIC / ADMIN APIs
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // ADMIN ONLY (FIXED PATHS)
-                        .requestMatchers(HttpMethod.PUT, "/customers/*/block")
-                        .hasRole("ADMIN")
+                        // 🔥 CUSTOMER NOMINEE READ
+                        .requestMatchers("/customers/**").permitAll()
 
-                        .requestMatchers(HttpMethod.PUT, "/customers/*/close")
-                        .hasRole("ADMIN")
-
-                        // ANY AUTHENTICATED USER
-                        .requestMatchers("/customers/**")
-                        .authenticated()
-
+                        // ❗ everything else secured
                         .anyRequest().authenticated()
                 )
-
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

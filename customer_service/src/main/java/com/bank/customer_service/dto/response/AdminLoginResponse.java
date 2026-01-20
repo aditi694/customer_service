@@ -1,12 +1,14 @@
 package com.bank.customer_service.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class LoginResponse {
-
+@Builder
+public class AdminLoginResponse {
     private String token;
-    private String role;
 }

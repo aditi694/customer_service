@@ -3,8 +3,7 @@ package com.bank.customer_service.dto.request;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
-
+public class AdminLoginRequest {
     private String username;
     private String password;
 }
