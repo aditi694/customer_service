@@ -48,4 +48,13 @@ public class InternalCustomerController {
                 .nomineeRelation(c.getNomineeRelation())
                 .build();
     }
+    @GetMapping("/{customerId}/contact")
+    public String getCustomerContact(
+            @PathVariable UUID customerId
+    ) {
+        Customer c = customerRepo.findById(customerId)
+                .orElseThrow(BusinessException::customerNotFound);
+
+        return c.getPhone(); // or email if needed
+    }
 }

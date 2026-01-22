@@ -1,5 +1,6 @@
 package com.bank.customer_service.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -22,7 +24,6 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest req,
@@ -32,7 +33,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = req.getHeader("Authorization");
 
-        // 🔹 No token → just continue (Spring will decide)
         if (header == null || !header.startsWith("Bearer ")) {
             chain.doFilter(req, res);
             return;
@@ -40,36 +40,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = header.substring(7);
+            Claims claims = jwtUtil.parse(token);
 
-            // validate token
-            String username = jwtUtil.validate(token);
+            String customerId = claims.get("customerId", String.class);
+            String role = claims.get("role", String.class);
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
-                            username,
+                            customerId,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role)) // ✅ HERE
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-
             chain.doFilter(req, res);
 
         } catch (JwtException | IllegalArgumentException ex) {
-
-            // ❗ VERY IMPORTANT
             SecurityContextHolder.clearContext();
-
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             res.setContentType("application/json");
-
-            res.getWriter().write("""
-                {
-                  "message": "Invalid or expired authentication token",
-                  "status": 401
-                }
-            """);
-
+            res.getWriter().write(
+                    "{\"message\":\"Invalid or expired token\"}"
+            );
         }
     }
+
 }

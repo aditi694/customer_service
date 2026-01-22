@@ -48,4 +48,8 @@ public class Customer {
     private LocalDateTime kycVerifiedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Column(name = "ifsc_code")
+    private String ifscCode;
+
 }

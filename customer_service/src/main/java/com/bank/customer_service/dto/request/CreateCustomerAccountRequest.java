@@ -20,8 +20,11 @@ public class CreateCustomerAccountRequest {
     private String aadhaar;
     private String pan;
 
+    // 🔥 NEW (ADMIN INPUT ONLY)
+    private String bankName;
+    private String city;
     private String branchName;
-    private String accountType;
 
+    private String accountType;
     private NomineeDto nominee;
 }

@@ -9,11 +9,13 @@ import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
 import com.bank.customer_service.dto.response.CreateCustomerAccountResponse;
 import com.bank.customer_service.dto.response.KycApprovalResponse;
+import com.bank.customer_service.entity.BankBranch;
 import com.bank.customer_service.entity.Customer;
 import com.bank.customer_service.entity.CustomerAudit;
 import com.bank.customer_service.enums.CustomerStatus;
 import com.bank.customer_service.enums.KycStatus;
 import com.bank.customer_service.exception.BusinessException;
+import com.bank.customer_service.repository.BankBranchRepository;
 import com.bank.customer_service.repository.CustomerAuditRepository;
 import com.bank.customer_service.repository.CustomerRepository;
 import com.bank.customer_service.service.AdminCustomerService;
@@ -42,6 +44,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
     private final NomineeRepository nomineeRepository;
+    private final BankBranchRepository bankBranchRepo;
 
 
 
@@ -55,7 +58,28 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         // 🔐 VALIDATION (moved out)
         CustomerValidator.validateCreate(req, customerRepo);
+        // 🔥 Resolve / create branch
+        BankBranch branch = bankBranchRepo
+                .findByBankNameAndCityAndBranchName(
+                        req.getBankName(),
+                        req.getCity(),
+                        req.getBranchName()
+                )
+                .orElseGet(() -> {
+                    String ifsc = generateIfsc(
+                            req.getBankName(),
+                            req.getCity()
+                    );
 
+                    return bankBranchRepo.save(
+                            BankBranch.builder()
+                                    .bankName(req.getBankName())
+                                    .city(req.getCity())
+                                    .branchName(req.getBranchName())
+                                    .ifscCode(ifsc)
+                                    .build()
+                    );
+                });
         // 🔹 Generate credentials
         String accountNumber = generateAccountNumber();
         String tempPassword = generateTempPassword();
@@ -73,6 +97,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .panMasked(mask(req.getPan()))
                 .accountNumber(accountNumber)
                 .passwordHash(passwordHash)
+                .ifscCode(branch.getIfscCode())   // 🔥
                 .nomineeName(req.getNominee() != null
                         ? req.getNominee().getName() : null)
                 .nomineeRelation(req.getNominee() != null
@@ -104,7 +129,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 accountNumber,
                 saved.getId(),
                 req.getAccountType() != null ? req.getAccountType() : "SAVINGS",
-                passwordHash
+                passwordHash,
+                branch.getIfscCode()
         );
 
         return CreateCustomerAccountResponse.builder()
@@ -112,6 +138,9 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .customerId(saved.getId().toString())
                 .accountNumber(accountNumber)
                 .password(tempPassword)
+                .bankName(branch.getBankName())
+                .branchName(branch.getBranchName())
+                .ifscCode(branch.getIfscCode())
                 .kycStatus("PENDING")
                 .build();
     }
@@ -122,8 +151,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
             String accountNumber,
             UUID customerId,
             String accountType,
-            String passwordHash
-    ) {
+            String passwordHash,
+            String ifscCode) {
         try {
             AccountSyncRequest request = AccountSyncRequest.builder()
                     .accountNumber(accountNumber)
@@ -133,6 +162,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                     .status("ACTIVE")
                     .balance(0.0)
                     .primaryAccount(true)
+                    .ifscCode(ifscCode)   // 🔥
                     .build();
 
             restTemplate.postForObject(
@@ -316,6 +346,23 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .build();
     }
 
+    private String generateIfsc(String bank, String city) {
+
+        String bankCode = bank.replaceAll("\\s+", "")
+                .toUpperCase()
+                .substring(0, 4);
+
+        String cityCode = city.replaceAll("\\s+", "")
+                .toUpperCase()
+                .substring(0, 3);
+
+        int count = bankBranchRepo
+                .countByBankNameAndCity(bank, city);
+
+        String seq = String.format("%02d", count + 1);
+
+        return bankCode + "0" + cityCode + seq;
+    }
 
     private String generateAccountNumber() {
         return "AC" + System.currentTimeMillis();

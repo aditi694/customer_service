@@ -1,32 +1,39 @@
 package com.bank.customer_service.security;
 
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
+
 @Component
 public class JwtUtil {
 
     private static final String SECRET =
-            "BANKING_ADMIN_SECRET_12345678901234567890";
+            "BANKING_UNIFIED_SECRET_KEY_32_CHARACTERS_MINIMUM_LENGTH_2026";
 
-    public String generate(String username) {
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    public String generate(UUID customerId, String role) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("role", "ADMIN")
+                .claim("customerId", customerId.toString()) // ✅ CORRECT
+                .claim("role", role.toUpperCase())           // ✅ NO ROLE_
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + 86400000)
+                )
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String validate(String token) {
+    public Claims parse(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET.getBytes())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }
+
