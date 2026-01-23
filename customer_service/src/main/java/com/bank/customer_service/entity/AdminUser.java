@@ -18,5 +18,5 @@ public class AdminUser {
     @Column(unique = true)
     private String username;
 
-    private String password; // bcrypt
+    private String password;
 }

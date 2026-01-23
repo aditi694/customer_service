@@ -33,7 +33,7 @@ public class AdminCustomerController {
         return ResponseEntity.ok(service.create(request));
     }
 
-    // 2️⃣ Get all customers
+    //  Get all customers
     @GetMapping("/customers")
     public List<AdminCustomerSummary> getAll() {
         return service.getAllCustomers();
@@ -77,7 +77,7 @@ public class AdminCustomerController {
         );
     }
 
-    // 7️⃣ Update customer
+    // Update customer
     @PutMapping("/{customerId}")
     public ApiSuccessResponse update(
             @PathVariable UUID customerId,
@@ -91,7 +91,7 @@ public class AdminCustomerController {
         );
     }
 
-    // 8️⃣ Soft delete
+    // Soft delete
     @DeleteMapping("/{customerId}")
     public ApiSuccessResponse delete(@PathVariable UUID customerId) {
         service.deleteCustomer(customerId);

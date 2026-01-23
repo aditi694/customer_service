@@ -41,7 +41,6 @@ public class BusinessException extends RuntimeException {
         return new BusinessException(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // predefined
     public static BusinessException customerNotFound() {
         return notFound("Customer not found");
     }

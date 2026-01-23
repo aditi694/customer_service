@@ -15,4 +15,6 @@ public interface BankBranchRepository
     );
 
     int countByBankNameAndCity(String bankName, String city);
+    Optional<BankBranch> findByIfscCode(String ifscCode);
+
 }

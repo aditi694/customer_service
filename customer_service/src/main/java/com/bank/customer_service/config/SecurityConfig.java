@@ -25,17 +25,15 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔥 INTERNAL MICROSERVICE CALLS (ACCOUNT-SERVICE)
+                        // INTERNAL MICROSERVICE CALLS (ACCOUNT-SERVICE)
                         .requestMatchers("/api/internal/**").permitAll()
 
-                        // 🔥 PUBLIC / ADMIN APIs
+                        // PUBLIC / ADMIN APIs
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // 🔥 CUSTOMER NOMINEE READ
+                        // CUSTOMER NOMINEE READ
                         .requestMatchers("/customers/**").permitAll()
-
-                        // ❗ everything else secured
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

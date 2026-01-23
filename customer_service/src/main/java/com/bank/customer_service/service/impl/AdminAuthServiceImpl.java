@@ -37,10 +37,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw BusinessException.unauthorized();
         }
 
-        // 🔥 FIX HERE
         String token = jwtUtil.generate(
-                admin.getId(),     // ✅ UUID
-                "ADMIN"            // ✅ ROLE
+                admin.getId(),
+                "ADMIN"
         );
 
         return new AdminLoginResponse(token);

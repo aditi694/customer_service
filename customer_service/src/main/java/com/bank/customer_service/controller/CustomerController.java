@@ -12,7 +12,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomerController {
 
-    private final NomineeService nomineeService; // ✅ THIS WAS MISSING
+    private final NomineeService nomineeService;
 
     @GetMapping("/{customerId}/nominee")
     public NomineeDto getNominee(@PathVariable UUID customerId) {

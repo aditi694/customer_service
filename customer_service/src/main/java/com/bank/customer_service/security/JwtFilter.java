@@ -49,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             customerId,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role)) // ✅ HERE
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);

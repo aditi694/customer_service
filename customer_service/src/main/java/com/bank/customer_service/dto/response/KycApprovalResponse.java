@@ -12,6 +12,5 @@ import java.util.UUID;
 public class KycApprovalResponse {
 
     private UUID customerId;
-    private KycStatus kycStatus;
     private LocalDateTime verifiedAt;
 }

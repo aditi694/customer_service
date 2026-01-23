@@ -16,7 +16,6 @@ public class AdminAuthController {
         this.authService = authService;
     }
 
-    // ONLY ADMIN LOGIN
     @PostMapping("/login")
     public ResponseEntity<AdminLoginResponse> login(
             @RequestBody AdminLoginRequest request

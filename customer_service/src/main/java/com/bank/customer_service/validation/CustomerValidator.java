@@ -20,7 +20,6 @@ public final class CustomerValidator {
 
     private CustomerValidator() {}
 
-    /* ================= CREATE ================= */
 
     public static void validateCreate(
             CreateCustomerAccountRequest req,
@@ -84,7 +83,6 @@ public final class CustomerValidator {
         log.info("Customer create validation passed");
     }
 
-    /* ================= KYC ================= */
 
     public static void validateKyc(Customer customer, KycApprovalRequest req) {
 
@@ -119,8 +117,6 @@ public final class CustomerValidator {
         log.info("KYC validation passed for customerId={}",
                 customer.getId());
     }
-
-    /* ================= UPDATE ================= */
 
     public static void validateUpdate(
             Customer customer,
@@ -161,8 +157,6 @@ public final class CustomerValidator {
                 customer.getId());
     }
 
-    /* ================= BLOCK ================= */
-
     public static void validateBlock(Customer customer, String reason) {
 
         log.info("Block validation started for customerId={}",
@@ -183,7 +177,7 @@ public final class CustomerValidator {
         log.info("Block validation passed for customerId={}",
                 customer.getId());
     }
-    /* ================= UNBLOCK ================= */
+
 
     public static void validateUnblock(Customer customer) {
 
@@ -201,7 +195,6 @@ public final class CustomerValidator {
     }
 
 
-    /* ================= DELETE ================= */
 
     public static void validateDelete(Customer customer) {
 
@@ -226,7 +219,6 @@ public final class CustomerValidator {
                 customer.getId());
     }
 
-    /* ================= HELPERS ================= */
 
     private static String maskPhone(String phone) {
         if (phone == null || phone.length() < 4) return "****";

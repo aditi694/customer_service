@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter @Setter
 public class KycApprovalRequest {
     @NotNull
-    private KycStatus status;   // APPROVED / REJECTED
+    private KycStatus status;
     private String remarks;
 }

@@ -18,8 +18,8 @@ public class JwtUtil {
 
     public String generate(UUID customerId, String role) {
         return Jwts.builder()
-                .claim("customerId", customerId.toString()) // ✅ CORRECT
-                .claim("role", role.toUpperCase())           // ✅ NO ROLE_
+                .claim("customerId", customerId.toString())
+                .claim("role", role.toUpperCase())
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis() + 86400000)
@@ -36,4 +36,5 @@ public class JwtUtil {
                 .getBody();
     }
 }
+
 

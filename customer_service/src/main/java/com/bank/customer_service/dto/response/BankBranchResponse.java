@@ -1,19 +1,19 @@
 package com.bank.customer_service.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class CreateCustomerAccountResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BankBranchResponse {
 
-    private boolean success;
-    private String customerId;
-    private String accountNumber;
-    private String password;
     private String ifscCode;
     private String bankName;
     private String branchName;
-
-    private String kycStatus;
+    private String city;
+    private String address;
 }

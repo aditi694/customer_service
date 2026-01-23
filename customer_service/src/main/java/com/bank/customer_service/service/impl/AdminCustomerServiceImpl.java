@@ -214,7 +214,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         return new KycApprovalResponse(
                 customer.getId(),
-                customer.getKycStatus(),
+//                customer.getKycStatus(),
                 customer.getKycVerifiedAt()
         );
     }
