@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -24,12 +23,24 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest req,
             HttpServletResponse res,
             FilterChain chain
     ) throws ServletException, IOException {
+
+        String path = req.getRequestURI();
+
+        // Skip public and internal endpoints
+        if (path.startsWith("/api/public/") ||
+                path.startsWith("/api/auth/login") ||
+                path.startsWith("/api/internal/") ||
+                path.startsWith("/customers/")) {
+            chain.doFilter(req, res);
+            return;
+        }
 
         String header = req.getHeader("Authorization");
 
@@ -45,24 +56,29 @@ public class JwtFilter extends OncePerRequestFilter {
             String customerId = claims.get("customerId", String.class);
             String role = claims.get("role", String.class);
 
+            // ✅ KEY FIX: Ensure role has ROLE_ prefix
+            if (!role.startsWith("ROLE_")) {
+                role = "ROLE_" + role;
+            }
+
+            System.out.println("✅ Customer Service Auth: " + role + " | Customer: " + customerId);
+
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
                             customerId,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                            List.of(new SimpleGrantedAuthority(role))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
             chain.doFilter(req, res);
 
         } catch (JwtException | IllegalArgumentException ex) {
+            System.err.println("❌ Customer Service JWT Auth Failed: " + ex.getMessage());
             SecurityContextHolder.clearContext();
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             res.setContentType("application/json");
-            res.getWriter().write(
-                    "{\"message\":\"Invalid or expired token\"}"
-            );
+            res.getWriter().write("{\"message\":\"Invalid or expired token\",\"status\":401}");
         }
     }
-
 }

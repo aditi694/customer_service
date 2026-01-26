@@ -18,5 +18,4 @@ public class AccountSyncRequest {
     private Double balance;
     private boolean primaryAccount;
     private String ifscCode;
-
 }

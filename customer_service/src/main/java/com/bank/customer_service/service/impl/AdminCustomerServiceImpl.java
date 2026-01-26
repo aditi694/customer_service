@@ -1,5 +1,6 @@
 package com.bank.customer_service.service.impl;
 
+import com.bank.customer_service.dto.client.AccountClient;
 import com.bank.customer_service.dto.client.AdminCustomerDetail;
 import com.bank.customer_service.dto.client.AdminCustomerSummary;
 import com.bank.customer_service.dto.client.CustomerSummary;
@@ -42,7 +43,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
     private final CustomerRepository customerRepo;
     private final CustomerAuditRepository auditRepo;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
+    private final AccountClient accountClient;
     private final NomineeRepository nomineeRepository;
     private final BankBranchRepository bankBranchRepo;
 
@@ -153,6 +154,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
             String accountType,
             String passwordHash,
             String ifscCode) {
+
         try {
             AccountSyncRequest request = AccountSyncRequest.builder()
                     .accountNumber(accountNumber)
@@ -162,21 +164,23 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                     .status("ACTIVE")
                     .balance(0.0)
                     .primaryAccount(true)
-                    .ifscCode(ifscCode)   // 🔥
+                    .ifscCode(ifscCode) // 🔥 VERY IMPORTANT
                     .build();
 
-            restTemplate.postForObject(
-                    ACCOUNT_SERVICE_URL,
-                    request,
-                    String.class
-            );
+            System.out.println("🔥 FEIGN → IFSC SENDING = " + ifscCode);
+
+            accountClient.createAccount(request);
+
+            System.out.println("✅ Account created via FEIGN");
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw BusinessException.internal(
                     "Customer created but account creation failed"
             );
         }
     }
+
 
     // ================= READ =================
 

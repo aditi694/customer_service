@@ -17,13 +17,14 @@ public class JwtUtil {
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     public String generate(UUID customerId, String role) {
+        // Store role WITHOUT ROLE_ prefix in token (we add it in filter)
+        String cleanRole = role.replace("ROLE_", "");
+
         return Jwts.builder()
                 .claim("customerId", customerId.toString())
-                .claim("role", role.toUpperCase())
+                .claim("role", cleanRole.toUpperCase())
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 86400000)
-                )
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -36,5 +37,3 @@ public class JwtUtil {
                 .getBody();
     }
 }
-
-

@@ -1,6 +1,7 @@
 package com.bank.customer_service.validation;
 
 import com.bank.customer_service.dto.request.CreateCustomerAccountRequest;
+import com.bank.customer_service.dto.request.CustomerRegistrationRequest;
 import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
 import com.bank.customer_service.entity.Customer;
@@ -219,7 +220,73 @@ public final class CustomerValidator {
                 customer.getId());
     }
 
+    public static void validateRegistration(
+            CustomerRegistrationRequest req,
+            CustomerRepository repo
+    ) {
+        log.info("Customer registration validation started");
 
+        if (req == null) {
+            throw BusinessException.badRequest("Registration request is required");
+        }
+
+        // Name validation
+        if (req.getName() == null || req.getName().isBlank()) {
+            throw BusinessException.badRequest("Name is required");
+        }
+
+        // Email validation
+        if (req.getEmail() == null || req.getEmail().isBlank()) {
+            throw BusinessException.badRequest("Email is required");
+        }
+
+        if (!req.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw BusinessException.badRequest("Invalid email format");
+        }
+
+        if (repo.existsByEmail(req.getEmail())) {
+            throw BusinessException.conflict("Email already registered");
+        }
+
+        // Phone validation
+        if (req.getPhone() == null || !req.getPhone().matches("\\d{10}")) {
+            throw BusinessException.badRequest("Phone number must be 10 digits");
+        }
+
+        if (repo.existsByPhone(req.getPhone())) {
+            throw BusinessException.conflict("Phone number already registered");
+        }
+
+        // DOB validation
+        if (req.getDob() == null) {
+            throw BusinessException.badRequest("Date of birth is required");
+        }
+
+        if (req.getDob().plusYears(18).isAfter(LocalDate.now())) {
+            throw BusinessException.badRequest("You must be at least 18 years old");
+        }
+
+        // Password validation
+        if (req.getPassword() == null || req.getPassword().length() < 8) {
+            throw BusinessException.badRequest("Password must be at least 8 characters");
+        }
+
+        if (!req.getPassword().equals(req.getConfirmPassword())) {
+            throw BusinessException.badRequest("Passwords do not match");
+        }
+
+        // Aadhaar validation
+        if (req.getAadhaar() == null || !req.getAadhaar().matches("\\d{12}")) {
+            throw BusinessException.badRequest("Valid 12-digit Aadhaar number is required");
+        }
+
+        // PAN validation
+        if (req.getPan() == null || !req.getPan().matches("[A-Z]{5}[0-9]{4}[A-Z]{1}")) {
+            throw BusinessException.badRequest("Valid PAN number is required (Format: ABCDE1234F)");
+        }
+
+        log.info("Customer registration validation passed");
+    }
     private static String maskPhone(String phone) {
         if (phone == null || phone.length() < 4) return "****";
         return "****" + phone.substring(phone.length() - 4);
