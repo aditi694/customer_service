@@ -33,8 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = req.getRequestURI();
 
-        // Skip public and internal endpoints
-        if (path.startsWith("/api/public/") ||
+        if (path.startsWith("/api/public/register") ||
                 path.startsWith("/api/auth/login") ||
                 path.startsWith("/api/internal/") ||
                 path.startsWith("/customers/")) {
@@ -56,7 +55,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String customerId = claims.get("customerId", String.class);
             String role = claims.get("role", String.class);
 
-            // ✅ KEY FIX: Ensure role has ROLE_ prefix
             if (!role.startsWith("ROLE_")) {
                 role = "ROLE_" + role;
             }

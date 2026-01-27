@@ -45,7 +45,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw BusinessException.unauthorized("Invalid username or password");
         }
 
-        // ✅ Generate token with ADMIN role (without ROLE_ prefix - filter adds it)
         String token = jwtUtil.generate(admin.getId(), "ADMIN");
 
         log.info("✅ Admin login successful: {} - Token generated", request.getUsername());

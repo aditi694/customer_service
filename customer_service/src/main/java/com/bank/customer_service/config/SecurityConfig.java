@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/internal/**").permitAll()
 
                         // PUBLIC / ADMIN APIs
+                        .requestMatchers("/api/public/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

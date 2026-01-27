@@ -52,14 +52,12 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
     private static final String ACCOUNT_SERVICE_URL =
             "http://localhost:8082/api/internal/accounts/create";
 
-    // ================= CREATE CUSTOMER =================
 
     @Override
     public CreateCustomerAccountResponse create(CreateCustomerAccountRequest req) {
 
-        // 🔐 VALIDATION (moved out)
         CustomerValidator.validateCreate(req, customerRepo);
-        // 🔥 Resolve / create branch
+
         BankBranch branch = bankBranchRepo
                 .findByBankNameAndCityAndBranchName(
                         req.getBankName(),
@@ -81,12 +79,11 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                                     .build()
                     );
                 });
-        // 🔹 Generate credentials
+
         String accountNumber = generateAccountNumber();
         String tempPassword = generateTempPassword();
         String passwordHash = passwordEncoder.encode(tempPassword);
 
-        // 🔹 Create customer entity
         Customer customer = Customer.builder()
                 .fullName(req.getName())
                 .email(req.getEmail())
@@ -98,7 +95,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .panMasked(mask(req.getPan()))
                 .accountNumber(accountNumber)
                 .passwordHash(passwordHash)
-                .ifscCode(branch.getIfscCode())   // 🔥
+                .ifscCode(branch.getIfscCode())
                 .nomineeName(req.getNominee() != null
                         ? req.getNominee().getName() : null)
                 .nomineeRelation(req.getNominee() != null
@@ -111,7 +108,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .build();
 
         Customer saved = customerRepo.save(customer);
-// ✅ SAVE NOMINEE IN NOMINEE TABLE
+
         if (req.getNominee() != null) {
             nomineeRepository.save(
                     Nominee.builder()
@@ -125,7 +122,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         audit("CUSTOMER_CREATED", saved.getId(), "Customer created by admin");
 
-        // 🔹 Sync with Account Service
+
         syncWithAccountService(
                 accountNumber,
                 saved.getId(),
@@ -146,7 +143,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .build();
     }
 
-    // ================= SYNC WITH ACCOUNT SERVICE =================
 
     private void syncWithAccountService(
             String accountNumber,
@@ -182,7 +178,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
     }
 
 
-    // ================= READ =================
 
     @Override
     public List<AdminCustomerSummary> getAllCustomers() {
@@ -197,7 +192,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
         return mapDetail(getCustomer(customerId));
     }
 
-    // ================= KYC =================
 
     @Override
     public KycApprovalResponse approveOrRejectKyc(
@@ -207,7 +201,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         Customer customer = getCustomer(customerId);
 
-        // 🔐 VALIDATION
         CustomerValidator.validateKyc(customer, req);
 
         customer.setKycStatus(req.getStatus());
@@ -218,19 +211,15 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         return new KycApprovalResponse(
                 customer.getId(),
-//                customer.getKycStatus(),
                 customer.getKycVerifiedAt()
         );
     }
-
-    // ================= BLOCK / UNBLOCK =================
 
     @Override
     public AdminCustomerDetail blockCustomer(UUID customerId, String reason) {
 
         Customer customer = getCustomer(customerId);
 
-        // 🔐 VALIDATION
         CustomerValidator.validateBlock(customer, reason);
 
         customer.setStatus(CustomerStatus.BLOCKED);
@@ -245,7 +234,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         Customer customer = getCustomer(customerId);
 
-        // 🔐 VALIDATION
         CustomerValidator.validateUnblock(customer);
 
         customer.setStatus(CustomerStatus.ACTIVE);
@@ -255,8 +243,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
         return mapDetail(customer);
     }
 
-    // ================= UPDATE / DELETE =================
-
     @Override
     public void updateCustomer(
             UUID customerId,
@@ -265,7 +251,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         Customer customer = getCustomer(customerId);
 
-        // 🔐 VALIDATION
         CustomerValidator.validateUpdate(customer, req);
 
         if (req.getEmail() != null) customer.setEmail(req.getEmail());
@@ -283,14 +268,12 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 
         Customer customer = getCustomer(customerId);
 
-        // 🔐 VALIDATION
         CustomerValidator.validateDelete(customer);
 
         customer.setStatus(CustomerStatus.DELETED);
         audit("CUSTOMER_DELETED", customerId, "Soft delete");
     }
 
-    // ================= HELPERS =================
 
     private Customer getCustomer(UUID id) {
         return customerRepo.findById(id)

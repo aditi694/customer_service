@@ -45,19 +45,15 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
 
         log.info("Customer registration started for email: {}", req.getEmail());
 
-        // Validate registration request
+
         CustomerValidator.validateRegistration(req, customerRepo);
 
-        // Resolve or create bank branch
         BankBranch branch = resolveBankBranch(req);
 
-        // Generate account number
         String accountNumber = generateAccountNumber();
 
-        // Hash password (Customer provided their own password)
         String passwordHash = passwordEncoder.encode(req.getPassword());
 
-        // Create customer entity
         Customer customer = Customer.builder()
                 .fullName(req.getName())
                 .email(req.getEmail())
@@ -81,12 +77,10 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
         Customer savedCustomer = customerRepo.save(customer);
         log.info("Customer created with ID: {}", savedCustomer.getId());
 
-        // Save nominee if provided
         if (req.getNominee() != null) {
             saveNominee(savedCustomer.getId(), req.getNominee());
         }
 
-        // Sync with Account Service
         syncWithAccountService(
                 accountNumber,
                 savedCustomer.getId().toString(),
@@ -97,7 +91,6 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
 
         log.info("Customer registration completed successfully");
 
-        // Build response with clear login instructions
         return CustomerRegistrationResponse.builder()
                 .success(true)
                 .message("🎉 Registration successful! Your account has been created.")
@@ -179,7 +172,7 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
                     .ifscCode(ifscCode)
                     .build();
 
-            log.error("🔥 FEIGN → Sending IFSC = {}", ifscCode);
+            log.error("FEIGN → Sending IFSC = {}", ifscCode);
 
             accountClient.createAccount(request);
 

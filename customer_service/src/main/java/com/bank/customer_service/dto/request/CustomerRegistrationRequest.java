@@ -7,7 +7,6 @@ import java.time.LocalDate;
 @Data
 public class CustomerRegistrationRequest {
 
-    // Personal Details
     private String name;
     private String email;
     private String phone;
@@ -15,20 +14,15 @@ public class CustomerRegistrationRequest {
     private String gender;
     private String address;
 
-    // KYC Documents
     private String aadhaar;
     private String pan;
 
-    // Account Preferences
     private String preferredBankName;
     private String preferredCity;
     private String preferredBranchName;
-    private String accountType; // SAVINGS, CURRENT
+    private String accountType;
 
-    // Nominee (Optional)
     private NomineeDto nominee;
-
-    // Password
     private String password;
     private String confirmPassword;
 }

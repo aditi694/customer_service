@@ -22,8 +22,6 @@ public class AdminCustomerController {
 
     private final AdminCustomerService service;
 
-    // ❌ REMOVED: Admin create account (customers self-register now)
-
     @GetMapping("/customers")
     public List<AdminCustomerSummary> getAll() {
         return service.getAllCustomers();
