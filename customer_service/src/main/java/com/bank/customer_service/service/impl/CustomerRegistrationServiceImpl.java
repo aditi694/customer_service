@@ -93,7 +93,7 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
 
         return CustomerRegistrationResponse.builder()
                 .success(true)
-                .message("🎉 Registration successful! Your account has been created.")
+                .message("Registration successful! Your account has been created.")
                 .customerId(savedCustomer.getId().toString())
                 .accountNumber(accountNumber)
                 .ifscCode(branch.getIfscCode())
