@@ -16,12 +16,10 @@ public class CustomerRegistrationRequest {
 
     private String aadhaar;
     private String pan;
-
     private String preferredBankName;
     private String preferredCity;
     private String preferredBranchName;
     private String accountType;
-
     private NomineeDto nominee;
     private String password;
     private String confirmPassword;
