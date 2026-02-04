@@ -13,7 +13,6 @@ public class CustomerRegistrationRequest {
     private LocalDate dob;
     private String gender;
     private String address;
-
     private String aadhaar;
     private String pan;
     private String preferredBankName;
