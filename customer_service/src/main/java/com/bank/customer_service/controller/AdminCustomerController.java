@@ -1,14 +1,15 @@
 package com.bank.customer_service.controller;
 
+import com.bank.customer_service.constants.AppConstants;
 import com.bank.customer_service.dto.client.AdminCustomerDetail;
 import com.bank.customer_service.dto.client.AdminCustomerSummary;
 import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
-import com.bank.customer_service.dto.response.ApiSuccessResponse;
+import com.bank.customer_service.dto.response.BaseResponse;
 import com.bank.customer_service.dto.response.KycApprovalResponse;
 import com.bank.customer_service.service.AdminCustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,68 +24,53 @@ public class AdminCustomerController {
     private final AdminCustomerService service;
 
     @GetMapping("/customers")
-    public List<AdminCustomerSummary> getAll() {
-        return service.getAllCustomers();
+    public BaseResponse<List<AdminCustomerSummary>> getAll() {
+        List<AdminCustomerSummary> data = service.getAllCustomers();
+        return new BaseResponse<>(data, AppConstants.SUCCESS_MSG, AppConstants.SUCCESS_CODE);
     }
 
     @GetMapping("/customer/{customerId}")
-    public AdminCustomerDetail getById(@PathVariable UUID customerId) {
-        return service.getCustomerById(customerId);
+    public BaseResponse<AdminCustomerDetail> getById(@PathVariable UUID customerId) {
+        AdminCustomerDetail data = service.getCustomerById(customerId);
+        return new BaseResponse<>(data, AppConstants.SUCCESS_MSG, AppConstants.SUCCESS_CODE);
     }
 
-    @PutMapping("customers/{customerId}/kyc")
-    public ApiSuccessResponse<KycApprovalResponse> kyc(
+    @PutMapping("/customers/{customerId}/kyc")
+    public BaseResponse<KycApprovalResponse> kyc(
             @PathVariable UUID customerId,
-            @RequestBody KycApprovalRequest req
+            @Valid @RequestBody KycApprovalRequest req
     ) {
-        return new ApiSuccessResponse<>(
-                "KYC status updated successfully",
-                service.approveOrRejectKyc(customerId, req),
-                LocalDateTime.now()
-        );
+        KycApprovalResponse data = service.approveOrRejectKyc(customerId, req);
+        return new BaseResponse<>(data, AppConstants.KYC_UPDATED, AppConstants.SUCCESS_CODE);
     }
 
     @PutMapping("/{customerId}/block")
-    public ApiSuccessResponse<AdminCustomerDetail> block(
+    public BaseResponse<AdminCustomerDetail> block(
             @PathVariable UUID customerId,
             @RequestParam String reason
     ) {
-        return new ApiSuccessResponse<>(
-                "Customer blocked successfully",
-                service.blockCustomer(customerId, reason),
-                LocalDateTime.now()
-        );
+        AdminCustomerDetail data = service.blockCustomer(customerId, reason);
+        return new BaseResponse<>(data, AppConstants.CUSTOMER_BLOCKED, AppConstants.SUCCESS_CODE);
     }
 
     @PutMapping("/{customerId}/unblock")
-    public ApiSuccessResponse<AdminCustomerDetail> unblock(@PathVariable UUID customerId) {
-        return new ApiSuccessResponse<>(
-                "Customer unblocked successfully",
-                service.unblockCustomer(customerId),
-                LocalDateTime.now()
-        );
+    public BaseResponse<AdminCustomerDetail> unblock(@PathVariable UUID customerId) {
+        AdminCustomerDetail data = service.unblockCustomer(customerId);
+        return new BaseResponse<>(data, AppConstants.CUSTOMER_UNBLOCKED, AppConstants.SUCCESS_CODE);
     }
 
     @PutMapping("/{customerId}")
-    public ApiSuccessResponse update(
+    public BaseResponse<Void> update(
             @PathVariable UUID customerId,
-            @RequestBody UpdateCustomerRequest req
+            @Valid @RequestBody UpdateCustomerRequest req
     ) {
         service.updateCustomer(customerId, req);
-        return new ApiSuccessResponse(
-                "Customer details updated successfully",
-                null,
-                LocalDateTime.now()
-        );
+        return new BaseResponse<>(null, AppConstants.CUSTOMER_UPDATED, AppConstants.SUCCESS_CODE);
     }
 
     @DeleteMapping("/{customerId}")
-    public ApiSuccessResponse delete(@PathVariable UUID customerId) {
+    public BaseResponse<Void> delete(@PathVariable UUID customerId) {
         service.deleteCustomer(customerId);
-        return new ApiSuccessResponse(
-                "Customer account deleted successfully",
-                null,
-                LocalDateTime.now()
-        );
+        return new BaseResponse<>(null, AppConstants.CUSTOMER_DELETED, AppConstants.SUCCESS_CODE);
     }
 }

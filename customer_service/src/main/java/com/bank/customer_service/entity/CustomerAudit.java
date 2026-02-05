@@ -12,7 +12,7 @@ import java.util.UUID;
 public class CustomerAudit {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private UUID customerId;

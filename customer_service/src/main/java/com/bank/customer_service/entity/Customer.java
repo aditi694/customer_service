@@ -24,7 +24,10 @@ public class Customer {
     private UUID id;
 
     private String fullName;
+    @Column(unique = true)
     private String email;
+
+    @Column(unique = true)
     private String phone;
     private LocalDate dob;
     private String gender;
@@ -32,7 +35,7 @@ public class Customer {
 
     private String aadhaarMasked;
     private String panMasked;
-
+    @Column(unique = true)
     private String accountNumber;
     private String passwordHash;
 

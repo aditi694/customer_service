@@ -27,4 +27,7 @@ public class BankBranch {
 
     @Column(nullable = false, unique = true)
     private String ifscCode;
+
+    @Column(nullable = false)
+    private String address;
 }

@@ -76,6 +76,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                                     .city(req.getCity())
                                     .branchName(req.getBranchName())
                                     .ifscCode(ifsc)
+                                    .address(req.getAddress())
                                     .build()
                     );
                 });
@@ -160,14 +161,14 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                     .status("ACTIVE")
                     .balance(0.0)
                     .primaryAccount(true)
-                    .ifscCode(ifscCode) // 🔥 VERY IMPORTANT
+                    .ifscCode(ifscCode)
                     .build();
 
-            System.out.println("🔥 FEIGN → IFSC SENDING = " + ifscCode);
+            System.out.println(" FEIGN → IFSC SENDING = " + ifscCode);
 
             accountClient.createAccount(request);
 
-            System.out.println("✅ Account created via FEIGN");
+            System.out.println("✅Account created via FEIGN");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,8 +208,7 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
         customer.setKycVerifiedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
 
-        audit("KYC_" + req.getStatus(), customerId, req.getRemarks());
-
+        audit("KYC_" + (req.getStatus() != null ? req.getStatus().name() : "UNKNOWN"), customerId, req.getRemarks() != null ? req.getRemarks() : "No remarks");
         return new KycApprovalResponse(
                 customer.getId(),
                 customer.getKycVerifiedAt()

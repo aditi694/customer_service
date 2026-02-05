@@ -136,6 +136,7 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
                                     .city(req.getPreferredCity())
                                     .branchName(req.getPreferredBranchName())
                                     .ifscCode(ifsc)
+                                    .address(req.getAddress())
                                     .build()
                     );
                 });
