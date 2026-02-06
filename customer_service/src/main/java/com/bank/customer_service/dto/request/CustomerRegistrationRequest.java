@@ -2,11 +2,13 @@ package com.bank.customer_service.dto.request;
 
 import com.bank.customer_service.dto.NomineeDto;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Builder(toBuilder = true)
 public class CustomerRegistrationRequest {
     @NotBlank(message = "Name is required")
     private String name;
@@ -53,4 +55,5 @@ public class CustomerRegistrationRequest {
 
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
+
 }

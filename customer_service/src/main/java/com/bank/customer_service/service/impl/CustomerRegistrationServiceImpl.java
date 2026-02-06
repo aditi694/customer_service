@@ -43,17 +43,12 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
     @Override
     public CustomerRegistrationResponse registerCustomer(CustomerRegistrationRequest req) {
 
-        log.info("Customer registration started for email: {}", req.getEmail());
-
+//        log.info("Customer registration started for email: {}", req.getEmail());
 
         CustomerValidator.validateRegistration(req, customerRepo);
-
         BankBranch branch = resolveBankBranch(req);
-
         String accountNumber = generateAccountNumber();
-
         String passwordHash = passwordEncoder.encode(req.getPassword());
-
         Customer customer = Customer.builder()
                 .fullName(req.getName())
                 .email(req.getEmail())
@@ -75,6 +70,7 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
                 .build();
 
         Customer savedCustomer = customerRepo.save(customer);
+
         log.info("Customer created with ID: {}", savedCustomer.getId());
 
         if (req.getNominee() != null) {
@@ -89,7 +85,7 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
                 branch.getIfscCode()
         );
 
-        log.info("Customer registration completed successfully");
+//        log.info("Customer registration completed successfully");
 
         return CustomerRegistrationResponse.builder()
                 .success(true)

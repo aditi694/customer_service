@@ -279,21 +279,20 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
         return customerRepo.findById(id)
                 .orElseThrow(BusinessException::customerNotFound);
     }
-    public CustomerSummary getCustomerSummary(UUID customerId) {
 
-        Customer c = customerRepo.findById(customerId)
-                .orElseThrow(BusinessException::customerNotFound);
-
-        return CustomerSummary.builder()
-                .customerId(c.getId())
-                .fullName(c.getFullName())
-                .kycStatus(c.getKycStatus().name())
-                .nomineeName(c.getNomineeName())
-                .nomineeRelation(c.getNomineeRelation())
-                .build();
-    }
-
-
+//    public CustomerSummary getCustomerSummary(UUID customerId) {
+//
+//        Customer c = customerRepo.findById(customerId)
+//                .orElseThrow(BusinessException::customerNotFound);
+//
+//        return CustomerSummary.builder()
+//                .customerId(c.getId())
+//                .fullName(c.getFullName())
+//                .kycStatus(c.getKycStatus().name())
+//                .nomineeName(c.getNomineeName())
+//                .nomineeRelation(c.getNomineeRelation())
+//                .build();
+//    }
 
     private void audit(String action, UUID customerId, String reason) {
         auditRepo.save(CustomerAudit.builder()

@@ -36,16 +36,13 @@ public final class CustomerValidator {
 
         if (req == null) throw BusinessException.badRequest("Request is required");
 
-        // Business rules only
         if (repo.existsByEmail(req.getEmail())) throw BusinessException.emailExists();
         if (repo.existsByPhone(req.getPhone())) throw BusinessException.phoneExists();
 
-        // Underage (business, not format)
         if (req.getDob().plusYears(18).isAfter(LocalDate.now())) {
             throw BusinessException.underageCustomer();
         }
 
-        // Password match (business)
         if (!req.getPassword().equals(req.getConfirmPassword())) {
             throw BusinessException.badRequest("Passwords do not match");
         }
