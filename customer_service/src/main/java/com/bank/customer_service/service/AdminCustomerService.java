@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 public interface AdminCustomerService {
 
-    CreateCustomerAccountResponse create(CreateCustomerAccountRequest request);
+//    CreateCustomerAccountResponse create(CreateCustomerAccountRequest request);
 
     List<AdminCustomerSummary> getAllCustomers();
 

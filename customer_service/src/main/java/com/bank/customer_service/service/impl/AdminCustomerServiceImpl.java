@@ -53,130 +53,130 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
             "http://localhost:8082/api/internal/accounts/create";
 
 
-    @Override
-    public CreateCustomerAccountResponse create(CreateCustomerAccountRequest req) {
-
-        CustomerValidator.validateCreate(req, customerRepo);
-
-        BankBranch branch = bankBranchRepo
-                .findByBankNameAndCityAndBranchName(
-                        req.getBankName(),
-                        req.getCity(),
-                        req.getBranchName()
-                )
-                .orElseGet(() -> {
-                    String ifsc = generateIfsc(
-                            req.getBankName(),
-                            req.getCity()
-                    );
-
-                    return bankBranchRepo.save(
-                            BankBranch.builder()
-                                    .bankName(req.getBankName())
-                                    .city(req.getCity())
-                                    .branchName(req.getBranchName())
-                                    .ifscCode(ifsc)
-                                    .address(req.getAddress())
-                                    .build()
-                    );
-                });
-
-        String accountNumber = generateAccountNumber();
-        String tempPassword = generateTempPassword();
-        String passwordHash = passwordEncoder.encode(tempPassword);
-
-        Customer customer = Customer.builder()
-                .fullName(req.getName())
-                .email(req.getEmail())
-                .phone(req.getPhone())
-                .dob(req.getDob())
-                .gender(req.getGender())
-                .address(req.getAddress())
-                .aadhaarMasked(mask(req.getAadhaar()))
-                .panMasked(mask(req.getPan()))
-                .accountNumber(accountNumber)
-                .passwordHash(passwordHash)
-                .ifscCode(branch.getIfscCode())
-                .nomineeName(req.getNominee() != null
-                        ? req.getNominee().getName() : null)
-                .nomineeRelation(req.getNominee() != null
-                        ? req.getNominee().getRelation() : null)
-                .nomineeDob(req.getNominee() != null
-                        ? req.getNominee().getDob() : null)
-                .status(CustomerStatus.ACTIVE)
-                .kycStatus(KycStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        Customer saved = customerRepo.save(customer);
-
-        if (req.getNominee() != null) {
-            nomineeRepository.save(
-                    Nominee.builder()
-                            .customerId(saved.getId())
-                            .name(req.getNominee().getName())
-                            .relation(req.getNominee().getRelation())
-                            .dob(req.getNominee().getDob())
-                            .build()
-            );
-        }
-
-        audit("CUSTOMER_CREATED", saved.getId(), "Customer created by admin");
-
-
-        syncWithAccountService(
-                accountNumber,
-                saved.getId(),
-                req.getAccountType() != null ? req.getAccountType() : "SAVINGS",
-                passwordHash,
-                branch.getIfscCode()
-        );
-
-        return CreateCustomerAccountResponse.builder()
-                .success(true)
-                .customerId(saved.getId().toString())
-                .accountNumber(accountNumber)
-                .password(tempPassword)
-                .bankName(branch.getBankName())
-                .branchName(branch.getBranchName())
-                .ifscCode(branch.getIfscCode())
-                .kycStatus("PENDING")
-                .build();
-    }
-
-
-    private void syncWithAccountService(
-            String accountNumber,
-            UUID customerId,
-            String accountType,
-            String passwordHash,
-            String ifscCode) {
-
-        try {
-            AccountSyncRequest request = AccountSyncRequest.builder()
-                    .accountNumber(accountNumber)
-                    .customerId(customerId.toString())
-                    .accountType(accountType.toUpperCase())
-                    .passwordHash(passwordHash)
-                    .status("ACTIVE")
-                    .balance(0.0)
-                    .primaryAccount(true)
-                    .ifscCode(ifscCode)
-                    .build();
-
-            System.out.println(" FEIGN → IFSC SENDING = " + ifscCode);
-
-            accountClient.createAccount(request);
-
-            System.out.println("✅Account created via FEIGN");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw BusinessException.internal(
-                    "Customer created but account creation failed"
-            );
-        }
-    }
+//    @Override
+//    public CreateCustomerAccountResponse create(CreateCustomerAccountRequest req) {
+//
+//        CustomerValidator.validateCreate(req, customerRepo);
+//
+//        BankBranch branch = bankBranchRepo
+//                .findByBankNameAndCityAndBranchName(
+//                        req.getBankName(),
+//                        req.getCity(),
+//                        req.getBranchName()
+//                )
+//                .orElseGet(() -> {
+//                    String ifsc = generateIfsc(
+//                            req.getBankName(),
+//                            req.getCity()
+//                    );
+//
+//                    return bankBranchRepo.save(
+//                            BankBranch.builder()
+//                                    .bankName(req.getBankName())
+//                                    .city(req.getCity())
+//                                    .branchName(req.getBranchName())
+//                                    .ifscCode(ifsc)
+//                                    .address(req.getAddress())
+//                                    .build()
+//                    );
+//                });
+//
+//        String accountNumber = generateAccountNumber();
+//        String tempPassword = generateTempPassword();
+//        String passwordHash = passwordEncoder.encode(tempPassword);
+//
+//        Customer customer = Customer.builder()
+//                .fullName(req.getName())
+//                .email(req.getEmail())
+//                .phone(req.getPhone())
+//                .dob(req.getDob())
+//                .gender(req.getGender())
+//                .address(req.getAddress())
+//                .aadhaarMasked(mask(req.getAadhaar()))
+//                .panMasked(mask(req.getPan()))
+//                .accountNumber(accountNumber)
+//                .passwordHash(passwordHash)
+//                .ifscCode(branch.getIfscCode())
+//                .nomineeName(req.getNominee() != null
+//                        ? req.getNominee().getName() : null)
+//                .nomineeRelation(req.getNominee() != null
+//                        ? req.getNominee().getRelation() : null)
+//                .nomineeDob(req.getNominee() != null
+//                        ? req.getNominee().getDob() : null)
+//                .status(CustomerStatus.ACTIVE)
+//                .kycStatus(KycStatus.PENDING)
+//                .createdAt(LocalDateTime.now())
+//                .build();
+//
+//        Customer saved = customerRepo.save(customer);
+//
+//        if (req.getNominee() != null) {
+//            nomineeRepository.save(
+//                    Nominee.builder()
+//                            .customerId(saved.getId())
+//                            .name(req.getNominee().getName())
+//                            .relation(req.getNominee().getRelation())
+//                            .dob(req.getNominee().getDob())
+//                            .build()
+//            );
+//        }
+//
+//        audit("CUSTOMER_CREATED", saved.getId(), "Customer created by admin");
+//
+//
+//        syncWithAccountService(
+//                accountNumber,
+//                saved.getId(),
+//                req.getAccountType() != null ? req.getAccountType() : "SAVINGS",
+//                passwordHash,
+//                branch.getIfscCode()
+//        );
+//
+//        return CreateCustomerAccountResponse.builder()
+//                .success(true)
+//                .customerId(saved.getId().toString())
+//                .accountNumber(accountNumber)
+//                .password(tempPassword)
+//                .bankName(branch.getBankName())
+//                .branchName(branch.getBranchName())
+//                .ifscCode(branch.getIfscCode())
+//                .kycStatus("PENDING")
+//                .build();
+//    }
+//
+//
+//    private void syncWithAccountService(
+//            String accountNumber,
+//            UUID customerId,
+//            String accountType,
+//            String passwordHash,
+//            String ifscCode) {
+//
+//        try {
+//            AccountSyncRequest request = AccountSyncRequest.builder()
+//                    .accountNumber(accountNumber)
+//                    .customerId(customerId.toString())
+//                    .accountType(accountType.toUpperCase())
+//                    .passwordHash(passwordHash)
+//                    .status("ACTIVE")
+//                    .balance(0.0)
+//                    .primaryAccount(true)
+//                    .ifscCode(ifscCode)
+//                    .build();
+//
+//            System.out.println(" FEIGN → IFSC SENDING = " + ifscCode);
+//
+//            accountClient.createAccount(request);
+//
+//            System.out.println("✅Account created via FEIGN");
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw BusinessException.internal(
+//                    "Customer created but account creation failed"
+//            );
+//        }
+//    }
 
 
 
@@ -331,35 +331,35 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
                 .createdAt(c.getCreatedAt())
                 .build();
     }
-
-    private String generateIfsc(String bank, String city) {
-
-        String bankCode = bank.replaceAll("\\s+", "")
-                .toUpperCase()
-                .substring(0, 4);
-
-        String cityCode = city.replaceAll("\\s+", "")
-                .toUpperCase()
-                .substring(0, 3);
-
-        int count = bankBranchRepo
-                .countByBankNameAndCity(bank, city);
-
-        String seq = String.format("%02d", count + 1);
-
-        return bankCode + "0" + cityCode + seq;
-    }
-
-    private String generateAccountNumber() {
-        return "AC" + System.currentTimeMillis();
-    }
-
-    private String generateTempPassword() {
-        return "Temp@" + (1000 + new Random().nextInt(9000));
-    }
-
-    private String mask(String value) {
-        if (value == null || value.length() < 4) return "****";
-        return "****-****-" + value.substring(value.length() - 4);
-    }
+//
+//    private String generateIfsc(String bank, String city) {
+//
+//        String bankCode = bank.replaceAll("\\s+", "")
+//                .toUpperCase()
+//                .substring(0, 4);
+//
+//        String cityCode = city.replaceAll("\\s+", "")
+//                .toUpperCase()
+//                .substring(0, 3);
+//
+//        int count = bankBranchRepo
+//                .countByBankNameAndCity(bank, city);
+//
+//        String seq = String.format("%02d", count + 1);
+//
+//        return bankCode + "0" + cityCode + seq;
+//    }
+//
+//    private String generateAccountNumber() {
+//        return "AC" + System.currentTimeMillis();
+//    }
+//
+//    private String generateTempPassword() {
+//        return "Temp@" + (1000 + new Random().nextInt(9000));
+//    }
+//
+//    private String mask(String value) {
+//        if (value == null || value.length() < 4) return "****";
+//        return "****-****-" + value.substring(value.length() - 4);
+//    }
 }

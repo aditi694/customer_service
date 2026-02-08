@@ -155,7 +155,68 @@ class CustomerRegistrationServiceImplTest {
         }
     }
     @Test
-    void customer_branchNotExist_createNewBranch(){
+    void customer_branchNotExist_createNewBranch() {
+        UUID customerID = UUID.randomUUID();
+
+        Customer customer = Customer.builder()
+                .id(customerID)
+                .fullName("Aditi Goel")
+                .email("aditi@test.com")
+                .passwordHash("hashedPwd")
+                .ifscCode("HDFC0DEL01")
+                .build();
+
+        try (MockedStatic<CustomerValidator> mocked =
+                     mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(), any(), any()))
+                    .thenReturn(Optional.empty());
+
+            when(bankBranchRepo.countByBankNameAndCity(
+                    "HDFC Bank", "Delhi"))
+                    .thenReturn(5);
+
+            when(bankBranchRepo.save(any()))
+                    .thenAnswer(inv -> inv.getArgument(0));
+
+            when(passwordEncoder.encode(any()))
+                    .thenReturn("hashedPwd");
+
+            when(customerRepo.save(any(Customer.class)))
+                    .thenReturn(customer);
+
+            CustomerRegistrationResponse response =
+                    service.registerCustomer(baseRequest);
+
+            assertTrue(response.getIfscCode().startsWith("HDFC0DEL"));
+            assertTrue(response.getIfscCode().endsWith("06"));
+
+            verify(bankBranchRepo).countByBankNameAndCity("HDFC Bank", "Delhi");
+            verify(bankBranchRepo).save(any());
+        }
+    }
+
+    @Test
+    void registerCustomer_validationFailure() {
+
+        try (MockedStatic<CustomerValidator> mocked = mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenThrow(BusinessException.badRequest("Invalid"));
+
+            assertThrows(BusinessException.class,
+                    () -> service.registerCustomer(baseRequest));
+
+            verify(customerRepo, never()).save(any());
+            verify(accountClient, never()).createAccount(any());
+            verify(nomineeRepo, never()).save(any());
+        }
+    }
+    @Test
+    void registerCustomer_accountServiceFailure() {
         UUID customerID = UUID.randomUUID();
         Customer customer = Customer.builder()
                 .id(customerID)
@@ -165,25 +226,72 @@ class CustomerRegistrationServiceImplTest {
                 .ifscCode("HDFC0DEL01")
                 .build();
 
-        try(
-                MockedStatic<CustomerValidator> mocked = mockStatic(CustomerValidator.class)){
-            mocked.when(()->CustomerValidator.validateRegistration(any(),any()))
-                    .thenReturn(null);
+        try (MockedStatic<CustomerValidator> mocked = mockStatic(CustomerValidator.class)) {
 
-            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(),any(),any()))
-                    .thenReturn(Optional.empty());
-            when(bankBranchRepo.save(any()))
-                    .thenReturn(branch);
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(), any(), any()))
+                    .thenReturn(Optional.of(branch));
+
             when(passwordEncoder.encode(any()))
-                    .thenReturn("hasedPwd");
+                    .thenReturn("hashedPwd");
+
             when(customerRepo.save(any(Customer.class)))
                     .thenReturn(customer);
-            CustomerRegistrationResponse response = service.registerCustomer(baseRequest);
 
-            Assertions.assertEquals("HDFC0DEL01", response.getIfscCode());
+            doThrow(new RuntimeException("Feign down"))
+                    .when(accountClient).createAccount(any());
 
-            verify(bankBranchRepo).save(any());
+            BusinessException ex = assertThrows(
+                    BusinessException.class,
+                    () -> service.registerCustomer(baseRequest)
+            );
+
+            assertTrue(ex.getMessage()
+                    .contains("Customer created but account creation failed"));
+
             verify(customerRepo).save(any());
+            verify(accountClient).createAccount(any());
+        }
+    }
+    @Test
+    void registerCustomer_passwordEncoded() {
+        UUID customerID = UUID.randomUUID();
+        Customer customer = Customer.builder()
+                .id(customerID)
+                .fullName("Aditi Goel")
+                .email("aditi@test.com")
+                .passwordHash("hasedPwd")
+                .ifscCode("HDFC0DEL01")
+                .build();
+
+        try (MockedStatic<CustomerValidator> mocked = mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(), any(), any()))
+                    .thenReturn(Optional.of(branch));
+
+            when(passwordEncoder.encode("password123"))
+                    .thenReturn("hashedPwd");
+
+            when(customerRepo.save(any(Customer.class)))
+                    .thenReturn(customer);
+
+            doNothing().when(accountClient).createAccount(any());
+
+            service.registerCustomer(baseRequest);
+
+            ArgumentCaptor<Customer> captor =
+                    ArgumentCaptor.forClass(Customer.class);
+            verify(customerRepo).save(captor.capture());
+
+            assertEquals("hashedPwd",
+                    captor.getValue().getPasswordHash());
+
+            verify(passwordEncoder).encode("password123");
         }
     }
 }
