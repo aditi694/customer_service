@@ -1,4 +1,4 @@
-package com.bank.customer_service.dto.client;
+package com.bank.customer_service.dto;
 
 import lombok.Builder;
 import lombok.Data;

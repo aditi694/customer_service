@@ -17,7 +17,7 @@ public class JwtUtil {
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     public String generate(UUID customerId, String role) {
-        // Store role WITHOUT ROLE_ prefix in token (we add it in filter)
+        // role WITHOUT ROLE_ prefix in token
         String cleanRole = role.replace("ROLE_", "");
 
         return Jwts.builder()

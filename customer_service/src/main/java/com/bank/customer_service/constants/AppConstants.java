@@ -16,7 +16,7 @@ public final class AppConstants {
 
     // Errors
     public static final String BAD_REQUEST_CODE = "400";
-
+    public static final String BAD_REQUEST_MSG = "Bad Request";
     public static final String NOT_FOUND_CODE = "404";
     public static final String NOT_FOUND_MSG = "Resource not found";
 

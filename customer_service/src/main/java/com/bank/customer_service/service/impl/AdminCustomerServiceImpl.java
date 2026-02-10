@@ -1,20 +1,14 @@
 package com.bank.customer_service.service.impl;
 
 import com.bank.customer_service.dto.client.AccountClient;
-import com.bank.customer_service.dto.client.AdminCustomerDetail;
-import com.bank.customer_service.dto.client.AdminCustomerSummary;
-import com.bank.customer_service.dto.client.CustomerSummary;
-import com.bank.customer_service.dto.request.AccountSyncRequest;
-import com.bank.customer_service.dto.request.CreateCustomerAccountRequest;
+import com.bank.customer_service.dto.AdminCustomerDetail;
+import com.bank.customer_service.dto.AdminCustomerSummary;
 import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
-import com.bank.customer_service.dto.response.CreateCustomerAccountResponse;
 import com.bank.customer_service.dto.response.KycApprovalResponse;
-import com.bank.customer_service.entity.BankBranch;
 import com.bank.customer_service.entity.Customer;
 import com.bank.customer_service.entity.CustomerAudit;
 import com.bank.customer_service.enums.CustomerStatus;
-import com.bank.customer_service.enums.KycStatus;
 import com.bank.customer_service.exception.BusinessException;
 import com.bank.customer_service.repository.BankBranchRepository;
 import com.bank.customer_service.repository.CustomerAuditRepository;
@@ -25,14 +19,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.bank.customer_service.repository.NomineeRepository;
-import com.bank.customer_service.entity.Nominee;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 @Service

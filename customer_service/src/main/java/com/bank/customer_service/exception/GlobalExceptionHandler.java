@@ -8,13 +8,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,10 +23,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Business Exceptions
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BaseResponse<Void>> handleBusiness(BusinessException ex) {
-        log.error("Business exception: {} - {}", ex.getStatus(), ex.getMessage());
         BaseResponse<Void> response = new BaseResponse<>(
                 null,
                 ex.getMessage(),
@@ -34,29 +33,59 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, ex.getStatus());
     }
 
-    // Validation (@Valid)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<BaseResponse<Void>> handleNoResource(NoResourceFoundException ex) {
+        BaseResponse<Void> response = new BaseResponse<>(
+                null,
+                AppConstants.NOT_FOUND_MSG,
+                AppConstants.NOT_FOUND_CODE
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         String msg = errors.isEmpty() ? "Invalid request data" : errors.toString();
         BaseResponse<Void> response = new BaseResponse<>(null, msg, AppConstants.BAD_REQUEST_CODE);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // Constraint violations (path/query params)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<BaseResponse<Void>> handleConstraint(ConstraintViolationException ex) {
         String msg = ex.getConstraintViolations().stream()
                 .map(cv -> cv.getPropertyPath() + ": " + cv.getMessage())
-                .findFirst().orElse("Invalid input");
+                .findFirst()
+                .orElse("Invalid input");
+
         BaseResponse<Void> response = new BaseResponse<>(null, msg, AppConstants.BAD_REQUEST_CODE);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // 404 - Wrong URL
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMethodValidation(HandlerMethodValidationException ex) {
+        BaseResponse<Void> response = new BaseResponse<>(
+                null,
+                AppConstants.BAD_REQUEST_MSG,
+                AppConstants.BAD_REQUEST_CODE
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<BaseResponse<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
+        BaseResponse<Void> response = new BaseResponse<>(
+                null,
+                AppConstants.BAD_REQUEST_MSG,
+                AppConstants.BAD_REQUEST_CODE
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<BaseResponse<Void>> handleNoHandler(NoHandlerFoundException ex) {
         BaseResponse<Void> response = new BaseResponse<>(
@@ -67,10 +96,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    // Feign errors
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<BaseResponse<Void>> handleFeign(FeignException ex) {
-        log.error("Feign error: {}", ex.getMessage());
         BaseResponse<Void> response = new BaseResponse<>(
                 null,
                 AppConstants.SERVICE_UNAVAILABLE_MSG,
@@ -79,10 +106,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    // DB constraint errors (e.g., duplicate entry)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<BaseResponse<Void>> handleDBError(DataIntegrityViolationException ex) {
-        log.error("DB constraint error", ex);
         BaseResponse<Void> response = new BaseResponse<>(
                 null,
                 "Database error: Duplicate or invalid data",
@@ -91,7 +116,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-    // Invalid JSON / Enum
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<BaseResponse<Void>> handleInvalidJson(HttpMessageNotReadableException ex) {
         BaseResponse<Void> response = new BaseResponse<>(
@@ -102,10 +126,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // Generic fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<Void>> handleGeneric(Exception ex) {
-        log.error("Unexpected error", ex);
         BaseResponse<Void> response = new BaseResponse<>(
                 null,
                 AppConstants.INTERNAL_ERROR_MSG,

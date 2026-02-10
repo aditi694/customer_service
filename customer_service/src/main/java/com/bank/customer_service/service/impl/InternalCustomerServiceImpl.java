@@ -1,6 +1,6 @@
 package com.bank.customer_service.service.impl;
 
-import com.bank.customer_service.dto.client.CustomerDetailResponse;
+import com.bank.customer_service.dto.CustomerDetailResponse;
 import com.bank.customer_service.entity.Customer;
 import com.bank.customer_service.exception.BusinessException;
 import com.bank.customer_service.repository.CustomerRepository;

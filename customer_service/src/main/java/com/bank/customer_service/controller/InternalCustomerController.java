@@ -1,7 +1,7 @@
 package com.bank.customer_service.controller;
 
-import com.bank.customer_service.dto.client.CustomerDetailResponse;
-import com.bank.customer_service.dto.client.CustomerSummary;
+import com.bank.customer_service.dto.CustomerDetailResponse;
+import com.bank.customer_service.dto.CustomerSummary;
 import com.bank.customer_service.dto.response.BankBranchResponse;
 import com.bank.customer_service.entity.BankBranch;
 import com.bank.customer_service.entity.Customer;

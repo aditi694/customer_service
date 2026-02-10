@@ -21,8 +21,8 @@ import com.bank.customer_service.repository.CustomerAuditRepository;
 import com.bank.customer_service.entity.Customer;
 import com.bank.customer_service.enums.CustomerStatus;
 import com.bank.customer_service.enums.KycStatus;
-import com.bank.customer_service.dto.client.AdminCustomerDetail;
-import com.bank.customer_service.dto.client.AdminCustomerSummary;
+import com.bank.customer_service.dto.AdminCustomerDetail;
+import com.bank.customer_service.dto.AdminCustomerSummary;
 import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
 import com.bank.customer_service.dto.response.KycApprovalResponse;
@@ -182,6 +182,30 @@ class AdminCustomerServiceImplTest {
         }
     }
     @Test
+    void approveKyc_statusAndRemarksNull() {
+
+        KycApprovalRequest req = new KycApprovalRequest();
+        req.setStatus(null);
+        req.setRemarks(null);
+
+        when(customerRepo.findById(customerId))
+                .thenReturn(Optional.of(activeCustomer));
+
+        try (MockedStatic<CustomerValidator> mocked =
+                     mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateKyc(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            KycApprovalResponse response =
+                    service.approveOrRejectKyc(customerId, req);
+
+            assertNotNull(response.getVerifiedAt());
+            verify(auditRepo).save(any());
+        }
+    }
+
+    @Test
     void blockCustomer_success() {
 
         when(customerRepo.findById(customerId))
@@ -249,6 +273,28 @@ class AdminCustomerServiceImplTest {
             verify(auditRepo).save(any());
         }
     }
+    @Test
+    void updateCustomer_onlyAddress() {
+
+        UpdateCustomerRequest req = new UpdateCustomerRequest();
+        req.setAddress("Mumbai");
+
+        when(customerRepo.findById(customerId))
+                .thenReturn(Optional.of(activeCustomer));
+
+        try (MockedStatic<CustomerValidator> mocked =
+                     mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateUpdate(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            service.updateCustomer(customerId, req);
+
+            assertEquals("Mumbai", activeCustomer.getAddress());
+            verify(auditRepo).save(any());
+        }
+    }
+
 
     @Test
     void deleteCustomer_success() {

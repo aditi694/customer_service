@@ -9,7 +9,7 @@ public class BusinessException extends RuntimeException {
     private final HttpStatus status;
     private final String errorCode;
 
-    private BusinessException(String message, HttpStatus status, String errorCode) {
+    BusinessException(String message, HttpStatus status, String errorCode) {
         super(message);
         this.status = status;
         this.errorCode = errorCode;
@@ -31,25 +31,25 @@ public class BusinessException extends RuntimeException {
         return new BusinessException(message, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
     }
 
-    public static BusinessException invalidCredentials() {
-        return new BusinessException(
-                "Invalid username or password",
-                HttpStatus.UNAUTHORIZED,
-                "INVALID_CREDENTIALS"
-        );
-    }
+//    public static BusinessException invalidCredentials() {
+//        return new BusinessException(
+//                "Invalid username or password",
+//                HttpStatus.UNAUTHORIZED,
+//                "INVALID_CREDENTIALS"
+//        );
+//    }
 
     public static BusinessException forbidden(String message) {
         return new BusinessException(message, HttpStatus.FORBIDDEN, "FORBIDDEN");
     }
-
-    public static BusinessException customerBlocked() {
-        return new BusinessException(
-                "Your account has been blocked. Please contact support",
-                HttpStatus.FORBIDDEN,
-                "CUSTOMER_BLOCKED"
-        );
-    }
+//
+//    public static BusinessException customerBlocked() {
+//        return new BusinessException(
+//                "Your account has been blocked. Please contact support",
+//                HttpStatus.FORBIDDEN,
+//                "CUSTOMER_BLOCKED"
+//        );
+//    }
 
     public static BusinessException customerDeleted() {
         return new BusinessException(
@@ -59,13 +59,13 @@ public class BusinessException extends RuntimeException {
         );
     }
 
-    public static BusinessException adminAccessRequired() {
-        return new BusinessException(
-                "This action requires administrator privileges",
-                HttpStatus.FORBIDDEN,
-                "ADMIN_ACCESS_REQUIRED"
-        );
-    }
+//    public static BusinessException adminAccessRequired() {
+//        return new BusinessException(
+//                "This action requires administrator privileges",
+//                HttpStatus.FORBIDDEN,
+//                "ADMIN_ACCESS_REQUIRED"
+//        );
+//    }
 
     public static BusinessException notFound(String message) {
         return new BusinessException(message, HttpStatus.NOT_FOUND, "NOT_FOUND");
@@ -99,21 +99,21 @@ public class BusinessException extends RuntimeException {
         );
     }
 
-    public static BusinessException kycAlreadyApproved() {
-        return new BusinessException(
-                "KYC is already approved",
-                HttpStatus.CONFLICT,
-                "KYC_ALREADY_APPROVED"
-        );
-    }
-
-    public static BusinessException customerAlreadyBlocked() {
-        return new BusinessException(
-                "Customer is already blocked",
-                HttpStatus.CONFLICT,
-                "CUSTOMER_ALREADY_BLOCKED"
-        );
-    }
+//    public static BusinessException kycAlreadyApproved() {
+//        return new BusinessException(
+//                "KYC is already approved",
+//                HttpStatus.CONFLICT,
+//                "KYC_ALREADY_APPROVED"
+//        );
+//    }
+//
+//    public static BusinessException customerAlreadyBlocked() {
+//        return new BusinessException(
+//                "Customer is already blocked",
+//                HttpStatus.CONFLICT,
+//                "CUSTOMER_ALREADY_BLOCKED"
+//        );
+//    }
 
     // ====================== 500 INTERNAL / 503 SERVICE UNAVAILABLE ======================
     public static BusinessException internal(String message) {
@@ -124,11 +124,11 @@ public class BusinessException extends RuntimeException {
         );
     }
 
-    public static BusinessException accountSyncFailed() {
-        return new BusinessException(
-                "Failed to sync account with account service. Please try again",
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "ACCOUNT_SYNC_FAILED"
-        );
-    }
+//    public static BusinessException accountSyncFailed() {
+//        return new BusinessException(
+//                "Failed to sync account with account service. Please try again",
+//                HttpStatus.INTERNAL_SERVER_ERROR,
+//                "ACCOUNT_SYNC_FAILED"
+//        );
+//    }
 }

@@ -8,11 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="customer_service (1)" />
+        <module name="customer_service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="customer_service" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

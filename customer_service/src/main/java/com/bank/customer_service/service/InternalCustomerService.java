@@ -1,6 +1,6 @@
 package com.bank.customer_service.service;
 
-import com.bank.customer_service.dto.client.CustomerDetailResponse;
+import com.bank.customer_service.dto.CustomerDetailResponse;
 
 import java.util.UUID;
 

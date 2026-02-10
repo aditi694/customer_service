@@ -1,8 +1,8 @@
 package com.bank.customer_service.controller;
 
 import com.bank.customer_service.constants.AppConstants;
-import com.bank.customer_service.dto.client.AdminCustomerDetail;
-import com.bank.customer_service.dto.client.AdminCustomerSummary;
+import com.bank.customer_service.dto.AdminCustomerDetail;
+import com.bank.customer_service.dto.AdminCustomerSummary;
 import com.bank.customer_service.dto.request.KycApprovalRequest;
 import com.bank.customer_service.dto.request.UpdateCustomerRequest;
 import com.bank.customer_service.dto.response.BaseResponse;
@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

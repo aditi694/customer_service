@@ -294,4 +294,93 @@ class CustomerRegistrationServiceImplTest {
             verify(passwordEncoder).encode("password123");
         }
     }
+    @Test
+    void registerCustomer_maskAadhaarAndPan_nullAndShort() {
+
+        CustomerRegistrationRequest request =
+                baseRequest.toBuilder()
+                        .aadhaar(null)
+                        .pan("12")
+                        .build();
+
+        UUID customerId = UUID.randomUUID();
+
+        Customer savedCustomer = Customer.builder()
+                .id(customerId)
+                .build();
+
+        try (MockedStatic<CustomerValidator> mocked =
+                     mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(), any(), any()))
+                    .thenReturn(Optional.of(branch));
+
+            when(passwordEncoder.encode(any()))
+                    .thenReturn("hashedPwd");
+
+            when(customerRepo.save(any(Customer.class)))
+                    .thenReturn(savedCustomer);
+
+            doNothing().when(accountClient).createAccount(any());
+
+            ArgumentCaptor<Customer> captor =
+                    ArgumentCaptor.forClass(Customer.class);
+
+            service.registerCustomer(request);
+
+            verify(customerRepo).save(captor.capture());
+
+            Customer captured = captor.getValue();
+            assertEquals("****", captured.getAadhaarMasked());
+            assertEquals("****", captured.getPanMasked());
+        }
+    }
+
+    @Test
+    void registerCustomer_accountTypeNull_defaultsToSavings() {
+
+        CustomerRegistrationRequest request =
+                baseRequest.toBuilder()
+                        .accountType(null)
+                        .build();
+
+        UUID customerID = UUID.randomUUID();
+        Customer customer = Customer.builder()
+                .id(customerID)
+                .passwordHash("hashedPwd")
+                .ifscCode("HDFC0DEL01")
+                .build();
+
+        try (MockedStatic<CustomerValidator> mocked =
+                     mockStatic(CustomerValidator.class)) {
+
+            mocked.when(() -> CustomerValidator.validateRegistration(any(), any()))
+                    .thenAnswer(inv -> null);
+
+            when(bankBranchRepo.findByBankNameAndCityAndBranchName(any(), any(), any()))
+                    .thenReturn(Optional.of(branch));
+
+            when(passwordEncoder.encode(any()))
+                    .thenReturn("hashedPwd");
+
+            when(customerRepo.save(any(Customer.class)))
+                    .thenReturn(customer);
+
+            doNothing().when(accountClient).createAccount(any());
+
+            ArgumentCaptor<AccountSyncRequest> captor =
+                    ArgumentCaptor.forClass(AccountSyncRequest.class);
+
+            service.registerCustomer(request);
+
+            verify(accountClient).createAccount(captor.capture());
+
+            assertEquals("SAVINGS",
+                    captor.getValue().getAccountType());
+        }
+    }
+
 }

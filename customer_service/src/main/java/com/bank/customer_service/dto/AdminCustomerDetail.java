@@ -1,4 +1,4 @@
-package com.bank.customer_service.dto.client;
+package com.bank.customer_service.dto;
 
 import com.bank.customer_service.enums.CustomerStatus;
 import com.bank.customer_service.enums.KycStatus;
