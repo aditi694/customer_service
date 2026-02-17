@@ -92,14 +92,6 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().getResultInfo().getResultMsg()).isEqualTo(AppConstants.NOT_FOUND_MSG);
     }
 
-    @Test
-    void handleNoHandlerFound() {
-        NoHandlerFoundException ex = new NoHandlerFoundException("GET", "/missing", null);
-        ResponseEntity<BaseResponse<Void>> response = handler.handleNoHandler(ex);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getResultInfo().getResultMsg()).isEqualTo(AppConstants.NOT_FOUND_MSG);
-    }
 
     @Test
     void handleConstraintViolation_withViolation() {
@@ -181,6 +173,14 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getResultInfo()).isNotNull();
         assertThat(response.getBody().getResultInfo().getResultMsg()).isEqualTo(AppConstants.BAD_REQUEST_MSG);
+    }
+    @Test
+    void handleNoHandlerFound() {
+        NoHandlerFoundException ex = new NoHandlerFoundException("GET", "/missing", null);
+        ResponseEntity<BaseResponse<Void>> response = handler.handleNoHandler(ex);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getResultInfo().getResultMsg()).isEqualTo(AppConstants.NOT_FOUND_MSG);
     }
 
     @Test

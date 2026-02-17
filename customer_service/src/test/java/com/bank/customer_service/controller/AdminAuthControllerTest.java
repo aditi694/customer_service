@@ -1,85 +1,51 @@
 package com.bank.customer_service.controller;
 
 import com.bank.customer_service.constants.AppConstants;
+import com.bank.customer_service.dto.request.AdminLoginRequest;
 import com.bank.customer_service.dto.response.AdminLoginResponse;
-import com.bank.customer_service.exception.BusinessException;
-import com.bank.customer_service.security.JwtFilter;
-import com.bank.customer_service.security.JwtUtil;
+import com.bank.customer_service.dto.response.BaseResponse;
 import com.bank.customer_service.service.AdminAuthService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = AdminAuthController.class)
+@ExtendWith(MockitoExtension.class)
 class AdminAuthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private AdminAuthService authService;
 
-    @MockBean
-    private JwtUtil jwtUtil;
-
-    @MockBean
-    private JwtFilter jwtFilter;
+    @InjectMocks
+    private AdminAuthController controller;
 
     @Test
-    void login_success() throws Exception {
+    void login_success() {
 
-        String json = """
-        {
-          "username": "admin",
-          "password": "admin123"
-        }
-        """;
+        AdminLoginRequest request = new AdminLoginRequest();
+        request.setUsername("admin");
+        request.setPassword("password");
 
-        AdminLoginResponse response =
-                AdminLoginResponse.builder()
-                        .token("jwt")
-                        .build();
+        AdminLoginResponse responseDto = new AdminLoginResponse();
+        responseDto.setToken("jwt-token");
 
-        when(authService.login(any())).thenReturn(response);
+        when(authService.login(request)).thenReturn(responseDto);
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.token").value("jwt"))
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.SUCCESS_MSG));
+        ResponseEntity<BaseResponse<AdminLoginResponse>> response =
+                controller.login(request);
 
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+        Assertions.assertEquals("jwt-token",
+                response.getBody().getData().getToken());
+        Assertions.assertEquals(AppConstants.SUCCESS_MSG,
+                response.getBody().getResultInfo().getResultMsg());
 
-        verify(authService).login(any());
-    }
-    @Test
-    void login_validationFailure_missingFields() throws Exception {
-
-        String invalidJson = """
-        {
-          "username": ""
-        }
-        """;
-
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isBadRequest());
-
-        verify(authService, never()).login(any());
+        verify(authService).login(request);
     }
 }

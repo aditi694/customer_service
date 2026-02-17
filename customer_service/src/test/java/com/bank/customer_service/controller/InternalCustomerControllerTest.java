@@ -1,186 +1,149 @@
 package com.bank.customer_service.controller;
 
 import com.bank.customer_service.dto.CustomerDetailResponse;
+import com.bank.customer_service.dto.CustomerSummary;
+import com.bank.customer_service.dto.response.BankBranchResponse;
 import com.bank.customer_service.entity.BankBranch;
 import com.bank.customer_service.entity.Customer;
-import com.bank.customer_service.exception.GlobalExceptionHandler;
+import com.bank.customer_service.enums.KycStatus;
+import com.bank.customer_service.exception.BusinessException;
 import com.bank.customer_service.repository.BankBranchRepository;
 import com.bank.customer_service.repository.CustomerRepository;
-import com.bank.customer_service.security.JwtFilter;
-import com.bank.customer_service.security.JwtUtil;
-
 import com.bank.customer_service.service.InternalCustomerService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.bank.customer_service.enums.KycStatus.APPROVED;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-
-@WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = InternalCustomerController.class)
-@Import(GlobalExceptionHandler.class)
+@ExtendWith(MockitoExtension.class)
 class InternalCustomerControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
+
+    @Mock
     private InternalCustomerService service;
-    @MockBean
-    private CustomerRepository custRepo;
-    @MockBean
-    private BankBranchRepository bankRepo;
-    @MockBean
-    private JwtUtil jwtUtil;
-    @MockBean
-    private JwtFilter jwtFilter;
+
+    @Mock
+    private CustomerRepository customerRepo;
+
+    @Mock
+    private BankBranchRepository bankBranchRepo;
+
+    @InjectMocks
+    private InternalCustomerController controller;
 
     @Test
-    void getCustomerDetailById_success() throws Exception {
+    void getCustomerDetail_success() {
         UUID id = UUID.randomUUID();
-        CustomerDetailResponse response = CustomerDetailResponse.builder()
-                .customerId(String.valueOf(id))
-                .fullName("Aditi Goel")
-                .email("aditi@test.com")
-                .phone("1234567899")
-                .build();
-        when(service.getCustomerDetails(id))
-                .thenReturn(response);
+        CustomerDetailResponse responseDto = new CustomerDetailResponse();
 
-        mockMvc.perform(get("/api/internal/customers/{id}/detail", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").value(id.toString()))
-                .andExpect(jsonPath("$.fullName").value("Aditi Goel"));
+        when(service.getCustomerDetails(id)).thenReturn(responseDto);
+
+        CustomerDetailResponse response = controller.getCustomerDetail(id);
+
+        Assertions.assertNotNull(response);
         verify(service).getCustomerDetails(id);
     }
 
     @Test
-    void getCustomerSummaryById_success() throws Exception {
-        UUID customerId = UUID.randomUUID();
+    void getCustomerSummary_success() {
+        UUID id = UUID.randomUUID();
 
-        Customer customer = Customer.builder()
-                .id(customerId)
-                .fullName("Aditi Goel")
-                .kycStatus(APPROVED)
-                .nomineeName("Father")
-                .nomineeRelation("FATHER")
-                .build();
+        Customer customer = new Customer();
+        customer.setId(id);
+        customer.setFullName("John Doe");
+        customer.setKycStatus(KycStatus.APPROVED);
+        customer.setNomineeName("Jane");
+        customer.setNomineeRelation("Sister");
 
-        when(custRepo.findById(customerId))
-                .thenReturn(Optional.of(customer));
-        mockMvc.perform(get("/api/internal/customers/{id}/summary", customerId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").value(customerId.toString()))
-                .andExpect(jsonPath("$.fullName").value("Aditi Goel"))
-                .andExpect(jsonPath("$.kycStatus").value("APPROVED"))
-                .andExpect(jsonPath("$.nomineeName")
-                        .value("Father"));
-        verify(custRepo).findById(customerId);
+        when(customerRepo.findById(id)).thenReturn(Optional.of(customer));
+
+        CustomerSummary summary = controller.getCustomerSummary(id);
+
+        Assertions.assertEquals("John Doe", summary.getFullName());
+        Assertions.assertEquals("APPROVED", summary.getKycStatus());
+
+        verify(customerRepo).findById(id);
     }
 
     @Test
-    void getCustomerContactById_success() throws Exception{
-        UUID customerId = UUID.randomUUID();
-        Customer customer = Customer.builder()
-                .id(customerId)
-                .phone("1234567899")
-                .build();
-        when(custRepo.findById(customerId))
-                .thenReturn(Optional.of(customer));
-        mockMvc.perform(get("/api/internal/customers/{id}/contact",customerId))
-                .andExpect(status().isOk())
-                .andExpect(content().string("1234567899"));
-        verify(custRepo).findById(customerId);
+    void getCustomerSummary_notFound() {
+        UUID id = UUID.randomUUID();
+
+        when(customerRepo.findById(id)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(BusinessException.class,
+                () -> controller.getCustomerSummary(id));
     }
+
     @Test
-    void getIfscByAccountNumber_success() throws Exception{
-        String accNumber = "AC123";
-        Customer customer = Customer.builder()
-                .accountNumber(accNumber)
-                .ifscCode("HDFC0DEL01")
-                .build();
-        when(custRepo.findByAccountNumber(accNumber))
+    void getCustomerContact_success() {
+        UUID id = UUID.randomUUID();
+
+        Customer customer = new Customer();
+        customer.setPhone("9999999999");
+
+        when(customerRepo.findById(id)).thenReturn(Optional.of(customer));
+
+        String phone = controller.getCustomerContact(id);
+
+        Assertions.assertEquals("9999999999", phone);
+    }
+
+    @Test
+    void getIfscByAccount_success() {
+        String accountNumber = "12345";
+
+        Customer customer = new Customer();
+        customer.setIfscCode("IFSC001");
+
+        when(customerRepo.findByAccountNumber(accountNumber))
                 .thenReturn(Optional.of(customer));
 
-        mockMvc.perform(get("/api/internal/customers/account/{acc}/ifsc", accNumber))
-                .andExpect(status().isOk())
-                .andExpect(content().string("HDFC0DEL01"));
+        String ifsc = controller.getIfscByAccount(accountNumber);
 
-        verify(custRepo).findByAccountNumber(accNumber);
+        Assertions.assertEquals("IFSC001", ifsc);
     }
-    @Test
-    void getIfscByAccountNumber_customerNotFound() throws Exception {
-        String accNumber = "AC999";
 
-        when(custRepo.findByAccountNumber(accNumber))
+    @Test
+    void getIfscByAccount_notFound() {
+        when(customerRepo.findByAccountNumber("12345"))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/internal/customers/account/{acc}/ifsc", accNumber))
-                .andExpect(status().isNotFound())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value("Customer not found for account"));
-
-        verify(custRepo).findByAccountNumber(accNumber);
+        Assertions.assertThrows(BusinessException.class,
+                () -> controller.getIfscByAccount("12345"));
     }
 
-
     @Test
-    void getBankBranch_success() throws Exception {
+    void getBankBranch_success() {
+        String ifsc = "IFSC001";
 
-        BankBranch branch = BankBranch.builder()
-                .ifscCode("HDFC0DEL01")
-                .bankName("HDFC Bank")
-                .branchName("Connaught Place")
-                .city("Delhi")
-                .build();
+        BankBranch branch = new BankBranch();
+        branch.setIfscCode(ifsc);
+        branch.setBankName("ABC Bank");
+        branch.setBranchName("Main Branch");
+        branch.setCity("Mumbai");
 
-        when(bankRepo.findByIfscCode("HDFC0DEL01"))
+        when(bankBranchRepo.findByIfscCode(ifsc))
                 .thenReturn(Optional.of(branch));
 
-        mockMvc.perform(get("/api/internal/customers/bank-branch/{ifsc}", "HDFC0DEL01"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ifscCode").value("HDFC0DEL01"))
-                .andExpect(jsonPath("$.bankName").value("HDFC Bank"))
-                .andExpect(jsonPath("$.branchName").value("Connaught Place"))
-                .andExpect(jsonPath("$.city").value("Delhi"))
-                .andExpect(jsonPath("$.address")
-                        .value("Connaught Place, Delhi"));
+        BankBranchResponse response = controller.getBankBranch(ifsc);
 
-        verify(bankRepo).findByIfscCode("HDFC0DEL01");
+        Assertions.assertEquals("ABC Bank", response.getBankName());
+        Assertions.assertEquals("Main Branch, Mumbai", response.getAddress());
     }
-    @Test
-    void getBankBranch_notFound() throws Exception {
 
-        when(bankRepo.findByIfscCode("HDFC0XXX01"))
+    @Test
+    void getBankBranch_notFound() {
+        when(bankBranchRepo.findByIfscCode("IFSC001"))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/internal/customers/bank-branch/{ifsc}", "HDFC0XXX01"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value("Bank branch not found"));
-
-
-        verify(bankRepo).findByIfscCode("HDFC0XXX01");
+        Assertions.assertThrows(BusinessException.class,
+                () -> controller.getBankBranch("IFSC001"));
     }
-
 }

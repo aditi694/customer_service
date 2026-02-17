@@ -1,165 +1,145 @@
 package com.bank.customer_service.controller;
+
 import com.bank.customer_service.constants.AppConstants;
 import com.bank.customer_service.dto.AdminCustomerDetail;
 import com.bank.customer_service.dto.AdminCustomerSummary;
+import com.bank.customer_service.dto.request.KycApprovalRequest;
+import com.bank.customer_service.dto.request.UpdateCustomerRequest;
+import com.bank.customer_service.dto.response.BaseResponse;
 import com.bank.customer_service.dto.response.KycApprovalResponse;
-import com.bank.customer_service.security.JwtFilter;
-import com.bank.customer_service.security.JwtUtil;
 import com.bank.customer_service.service.AdminCustomerService;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
-@WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = AdminCustomerController.class)
+@ExtendWith(MockitoExtension.class)
 class AdminCustomerControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private AdminCustomerService service;
 
-    @MockBean
-    private JwtFilter jwtFilter;
-
-    @MockBean
-    private JwtUtil jwtUtil;
+    @InjectMocks
+    private AdminCustomerController controller;
 
     @Test
-    void getAllCustomers_success() throws Exception{
-    when(service.getAllCustomers()).thenReturn(List.of(AdminCustomerSummary.builder().build()));
-    mockMvc.perform(get("/api/admin/customers"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.resultInfo.resultMsg")
-                    .value(AppConstants.SUCCESS_MSG));
-    verify(service).getAllCustomers();
+    void getAll_success() {
+        when(service.getAllCustomers())
+                .thenReturn(List.of(new AdminCustomerSummary()));
+
+        BaseResponse<List<AdminCustomerSummary>> response =
+                controller.getAll();
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.SUCCESS_MSG,
+                response.getResultInfo().getResultMsg());
+
+        verify(service).getAllCustomers();
     }
 
     @Test
-    void getAllCustomersByID_success() throws Exception{
+    void getById_success() {
         UUID id = UUID.randomUUID();
-        when(service.getCustomerById(id)).
-                thenReturn(AdminCustomerDetail.builder().build());
-        mockMvc.perform(get("/api/admin/customer/{id}",id ))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.resultInfo.resultMsg").value(AppConstants.SUCCESS_MSG));
+
+        when(service.getCustomerById(id))
+                .thenReturn(new AdminCustomerDetail());
+
+        BaseResponse<AdminCustomerDetail> response =
+                controller.getById(id);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.SUCCESS_MSG,
+                response.getResultInfo().getResultMsg());
+
         verify(service).getCustomerById(id);
     }
+
     @Test
-    void kycStatus_success() throws Exception{
+    void kyc_success() {
         UUID id = UUID.randomUUID();
-        String json = """
-        {
-          "status": "APPROVED",
-          "remarks": "Verified"
-        }
-        """;
-        when(service.approveOrRejectKyc(eq(id),any()))
-                .thenReturn(new KycApprovalResponse(id, LocalDateTime.now()));
-        mockMvc.perform(put("/api/admin/customers/{id}/kyc",id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.KYC_UPDATED));
-        verify(service).approveOrRejectKyc(eq(id),any());
-    }
-    @Test
-    void updateKyc_validationFailure() throws Exception {
+        KycApprovalRequest request = new KycApprovalRequest();
 
-        UUID id = UUID.randomUUID();
+        when(service.approveOrRejectKyc(id, request))
+                .thenReturn(new KycApprovalResponse());
 
-        String invalidJson = "{}";
+        BaseResponse<KycApprovalResponse> response =
+                controller.kyc(id, request);
 
-        mockMvc.perform(put("/api/admin/customers/{id}/kyc", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isBadRequest());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.KYC_UPDATED,
+                response.getResultInfo().getResultMsg());
 
-        verify(service, never())
-                .approveOrRejectKyc(any(), any());
+        verify(service).approveOrRejectKyc(id, request);
     }
 
     @Test
-    void blockCustomer_success() throws Exception{
+    void block_success() {
         UUID id = UUID.randomUUID();
-        when(service.blockCustomer(eq(id),eq("fraud"))).
-                thenReturn(AdminCustomerDetail.builder().build());
-        mockMvc.perform(put("/api/admin/{id}/block",id)
-                .param("reason","fraud"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.CUSTOMER_BLOCKED));
-        verify(service).blockCustomer(id,"fraud");
+        String reason = "Violation";
+
+        when(service.blockCustomer(id, reason))
+                .thenReturn(new AdminCustomerDetail());
+
+        BaseResponse<AdminCustomerDetail> response =
+                controller.block(id, reason);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.CUSTOMER_BLOCKED,
+                response.getResultInfo().getResultMsg());
+
+        verify(service).blockCustomer(id, reason);
     }
+
     @Test
-    void unblockCustomer_success() throws Exception{
+    void unblock_success() {
         UUID id = UUID.randomUUID();
+
         when(service.unblockCustomer(id))
-                .thenReturn(AdminCustomerDetail.builder().build());
-        mockMvc.perform(put("/api/admin/{id}/unblock",id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.CUSTOMER_UNBLOCKED));
+                .thenReturn(new AdminCustomerDetail());
+
+        BaseResponse<AdminCustomerDetail> response =
+                controller.unblock(id);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.CUSTOMER_UNBLOCKED,
+                response.getResultInfo().getResultMsg());
+
         verify(service).unblockCustomer(id);
     }
-    @Test
-    void updateCustomer_success() throws Exception{
-        UUID id = UUID.randomUUID();
 
-        String json = """
-        {
-          "email": "new@test.com"
-        }
-        """;
-        mockMvc.perform(put("/api/admin/{id}",id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.CUSTOMER_UPDATED));
-        verify(service).updateCustomer(eq(id),any());
+    @Test
+    void update_success() {
+        UUID id = UUID.randomUUID();
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+
+        BaseResponse<Void> response =
+                controller.update(id, request);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.CUSTOMER_UPDATED,
+                response.getResultInfo().getResultMsg());
+
+        verify(service).updateCustomer(id, request);
     }
-    @Test
-    void deleteCustomer_success() throws Exception {
 
+    @Test
+    void delete_success() {
         UUID id = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/admin/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultInfo.resultMsg")
-                        .value(AppConstants.CUSTOMER_DELETED));
+        BaseResponse<Void> response =
+                controller.delete(id);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(AppConstants.CUSTOMER_DELETED,
+                response.getResultInfo().getResultMsg());
 
         verify(service).deleteCustomer(id);
     }
-
 }

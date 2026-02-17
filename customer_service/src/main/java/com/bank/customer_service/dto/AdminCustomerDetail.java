@@ -2,8 +2,10 @@ package com.bank.customer_service.dto;
 
 import com.bank.customer_service.enums.CustomerStatus;
 import com.bank.customer_service.enums.KycStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AdminCustomerDetail {
     private UUID customerId;
     private String fullName;

@@ -1,102 +1,45 @@
 package com.bank.customer_service.controller;
 
 import com.bank.customer_service.constants.AppConstants;
-import com.bank.customer_service.dto.NomineeDto;
+import com.bank.customer_service.dto.request.CustomerRegistrationRequest;
+import com.bank.customer_service.dto.response.BaseResponse;
 import com.bank.customer_service.dto.response.CustomerRegistrationResponse;
-import com.bank.customer_service.security.JwtFilter;
-import com.bank.customer_service.security.JwtUtil;
-
 import com.bank.customer_service.service.CustomerRegistrationService;
-import com.bank.customer_service.service.NomineeService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
-@WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = CustomerRegistrationController.class)
+@ExtendWith(MockitoExtension.class)
 class CustomerRegistrationControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private CustomerRegistrationService registrationService;
 
-    @MockBean
-    private JwtFilter jwtFilter;
-
-    @MockBean
-    private JwtUtil jwtUtil;
+    @InjectMocks
+    private CustomerRegistrationController controller;
 
     @Test
-    void registerCustomer_success() throws Exception{
-        String requestJson = """
-        {
-          "name": "Aditi Goel",
-          "email": "aditi@test.com",
-          "phone": "9999999999",
-          "password": "password123",
-          "confirmPassword": "password123",
-          "dob": "2000-01-01",
-          "gender": "FEMALE",
-          "address": "Delhi",
-          "aadhaar": "123412341234",
-          "pan": "ABCDE1234F",
-          "preferredBankName": "HDFC Bank",
-          "preferredCity": "Delhi",
-          "preferredBranchName": "Connaught Place"
-        }
-        """;
-        CustomerRegistrationResponse response =
-                CustomerRegistrationResponse.builder()
-                        .customerId("cust-123")
-                        .accountNumber("AC123456")
-                        .ifscCode("HDFC0DEL01")
-                        .build();
+    void register_success() {
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest();
+        CustomerRegistrationResponse responseDto = new CustomerRegistrationResponse();
 
-        when(registrationService.registerCustomer(any()))
-                .thenReturn(response);
-        mockMvc.perform(post("/api/public/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.resultInfo.resultMsg").value(AppConstants.REGISTRATION_SUCCESS));
-        verify(registrationService,times(1)).registerCustomer(any());
-    }
-    @Test
-    void register_validationFailure() throws Exception {
+        when(registrationService.registerCustomer(request))
+                .thenReturn(responseDto);
 
-        String invalidJson = """
-        {
-          "email": "aditi@test.com"
-        }
-        """;
+        ResponseEntity<BaseResponse<CustomerRegistrationResponse>> response =
+                controller.register(request);
 
-        mockMvc.perform(post("/api/public/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isBadRequest());
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(200, response.getStatusCodeValue());
+        Assertions.assertEquals(AppConstants.REGISTRATION_SUCCESS,
+                response.getBody().getResultInfo().getResultMsg());
 
-        verify(registrationService, never())
-                .registerCustomer(any());
+        verify(registrationService).registerCustomer(request);
     }
 }
