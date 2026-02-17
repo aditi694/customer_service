@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e4bd0d10-f82f-4831-8d08-21a7d1a894b5" name="Changes" comment="Add Tests">
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/AdminCustomerDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/AdminCustomerDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/AdminCustomerSummary.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/AdminCustomerSummary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/CustomerDetailResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/CustomerDetailResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/request/AdminLoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/request/AdminLoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/response/CustomerRegistrationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/response/CustomerRegistrationResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/response/KycApprovalResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/dto/response/KycApprovalResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/AdminAuthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/AdminAuthControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/AdminCustomerControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/AdminCustomerControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/CustomerControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/CustomerControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/CustomerRegistrationControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/CustomerRegistrationControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/InternalCustomerControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/controller/InternalCustomerControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/exception/GlobalExceptionHandlerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/customer_service/src/test/java/com/bank/customer_service/exception/GlobalExceptionHandlerTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;aditi694&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/aditi694/customer_service.git&quot;,
+    &quot;accountId&quot;: &quot;50e37a33-63cb-4f65-b27c-ce32e81cc571&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="396ALPTnGmVgFII5G3Y8KLAPP3e" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.CustomerServiceApplication.executor": "Debug",
+    "JUnit.AdminAuthControllerTest.executor": "Coverage",
+    "JUnit.AdminAuthControllerTest.login_success.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.blockCustomer_success.executor": "Debug",
+    "JUnit.AdminCustomerControllerTest.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.getAllCustomersByID_success.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.getAllCustomers_success.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.kycStatus_success.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.unblockCustomer_success.executor": "Coverage",
+    "JUnit.AdminCustomerControllerTest.updateCustomer_success.executor": "Coverage",
+    "JUnit.AdminCustomerServiceImplTest.executor": "Coverage",
+    "JUnit.BusinessExceptionTest.executor": "Coverage",
+    "JUnit.CustomerControllerTest.executor": "Coverage",
+    "JUnit.CustomerControllerTest.getNominee_success.executor": "Coverage",
+    "JUnit.CustomerRegistrationControllerTest.executor": "Coverage",
+    "JUnit.CustomerRegistrationControllerTest.register_validationFailure.executor": "Coverage",
+    "JUnit.CustomerRegistrationServiceImplTest (1).executor": "Debug",
+    "JUnit.CustomerRegistrationServiceImplTest.customerRegister_success_noNominne_branch.executor": "Coverage",
+    "JUnit.CustomerRegistrationServiceImplTest.customerRegister_success_withNominee (1).executor": "Debug",
+    "JUnit.CustomerRegistrationServiceImplTest.customerRegister_success_withNominee.executor": "Debug",
+    "JUnit.CustomerRegistrationServiceImplTest.executor": "Coverage",
+    "JUnit.CustomerRegistrationServiceImplTest.registerCustomer_shouldReturnSuccess.executor": "Debug",
+    "JUnit.CustomerRegistrationServiceImplTest.registerCustomer_success.executor": "Coverage",
+    "JUnit.CustomerRegistrationServiceImplTest.registerCustomer_success_withNominee.executor": "Coverage",
+    "JUnit.CustomerServiceApplicationTests.myFirst.executor": "Run",
+    "JUnit.CustomerValidatorTest.executor": "Coverage",
+    "JUnit.GlobalExceptionHandlerStandaloneTest.executor": "Debug",
+    "JUnit.GlobalExceptionHandlerTest.executor": "Coverage",
+    "JUnit.GlobalExceptionHandlerTest.handleBusinessException_withErrorCode.executor": "Coverage",
+    "JUnit.GlobalExceptionHandlerTest.invalidJsonHandledCorrectly.executor": "Debug",
+    "JUnit.GlobalExceptionHandlerTest.missingParamHandled.executor": "Debug",
+    "JUnit.GlobalExceptionHandlerUnitTest.executor": "Debug",
+    "JUnit.GlobalExceptionHandlerUnitTest.handleMethodArgumentNotValid.executor": "Coverage",
+    "JUnit.InternalCustomerControllerTest.executor": "Coverage",
+    "JUnit.InternalCustomerControllerTest.getCustomerContactById_success.executor": "Coverage",
+    "JUnit.InternalCustomerControllerTest.getCustomerSummaryById_success.executor": "Coverage",
+    "JUnit.InternalCustomerControllerTest.getIfscByAccountNumber_success.executor": "Coverage",
+    "JUnit.InternalCustomerServiceImplTest.executor": "Coverage",
+    "JUnit.InternalCustomerServiceImplTest.getCustomerDetailsById_success.executor": "Coverage",
+    "JUnit.JwtUtilTest.executor": "Coverage",
+    "JUnit.SecurityConfigTest.executor": "Coverage",
+    "JUnit.customer_service in customer_service.executor": "Coverage",
+    "JUnit.java in customer_service.executor": "Coverage",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.CustomerServiceApplication.executor": "Debug",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/customer_service/src/main/java/com/bank/customer_service/extra" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.bank.customer_service.validation" />
+      <recent name="com.bank.customer_service.exception" />
+      <recent name="com.bank.customer_service.config" />
+      <recent name="com.bank.customer_service.security" />
+      <recent name="com.bank.customer_service.service.impl" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.CustomerValidatorTest">
+    <configuration name="AdminCustomerControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="customer_service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bank.customer_service.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bank.customer_service.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.bank.customer_service.controller.AdminCustomerControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CustomerControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="customer_service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bank.customer_service.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bank.customer_service.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.bank.customer_service.controller.CustomerControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CustomerRegistrationControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="customer_service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bank.customer_service.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bank.customer_service.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.bank.customer_service.controller.CustomerRegistrationControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CustomerValidatorTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="customer_service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bank.customer_service.validation.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bank.customer_service.validation" />
+      <option name="MAIN_CLASS_NAME" value="com.bank.customer_service.validation.CustomerValidatorTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="InternalCustomerControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="customer_service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bank.customer_service.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bank.customer_service.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.bank.customer_service.controller.InternalCustomerControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CustomerServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="customer_service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.bank.customer_service.CustomerServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.CustomerValidatorTest" />
+        <item itemvalue="JUnit.InternalCustomerControllerTest" />
+        <item itemvalue="JUnit.CustomerControllerTest" />
+        <item itemvalue="JUnit.CustomerRegistrationControllerTest" />
+        <item itemvalue="JUnit.AdminCustomerControllerTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e4bd0d10-f82f-4831-8d08-21a7d1a894b5" name="Changes" comment="" />
+      <created>1770006091818</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1770006091818</updated>
+      <workItem from="1770006096428" duration="778000" />
+      <workItem from="1770007781934" duration="3518000" />
+      <workItem from="1770019248160" duration="2852000" />
+      <workItem from="1770091651918" duration="485000" />
+      <workItem from="1770092475847" duration="5070000" />
+      <workItem from="1770177779689" duration="8500000" />
+      <workItem from="1770263727037" duration="14310000" />
+      <workItem from="1770350304815" duration="26787000" />
+      <workItem from="1770608986690" duration="25818000" />
+      <workItem from="1770695286347" duration="24155000" />
+      <workItem from="1770785242423" duration="38000" />
+      <workItem from="1770786277461" duration="38000" />
+      <workItem from="1770794082071" duration="2633000" />
+      <workItem from="1770812935369" duration="24000" />
+      <workItem from="1770813547374" duration="37000" />
+      <workItem from="1770814336398" duration="10000" />
+      <workItem from="1770869343172" duration="48000" />
+      <workItem from="1770869725000" duration="8000" />
+      <workItem from="1770968050274" duration="7000" />
+      <workItem from="1771302440623" duration="662000" />
+    </task>
+    <task id="LOCAL-00001" summary="update">
+      <option name="closed" value="true" />
+      <created>1770209034123</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1770209034123</updated>
+    </task>
+    <task id="LOCAL-00002" summary="update">
+      <option name="closed" value="true" />
+      <created>1770209115715</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1770209115715</updated>
+    </task>
+    <task id="LOCAL-00003" summary="update">
+      <option name="closed" value="true" />
+      <created>1770210125625</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1770210125625</updated>
+    </task>
+    <task id="LOCAL-00004" summary="update">
+      <option name="closed" value="true" />
+      <created>1770296017723</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1770296017723</updated>
+    </task>
+    <task id="LOCAL-00005" summary="update">
+      <option name="closed" value="true" />
+      <created>1770383906366</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1770383906366</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Tests">
+      <option name="closed" value="true" />
+      <created>1770726127367</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1770726127367</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update" />
+    <MESSAGE value="Add Tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Tests" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest_getAllCustomers_success.ic" NAME="AdminCustomerControllerTest.getAllCustomers_success Coverage Results" MODIFIED="1770616530119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$GlobalExceptionHandlerTest.ic" NAME="GlobalExceptionHandlerTest Coverage Results" MODIFIED="1770707895003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.exception.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerControllerTest_getNominee_success.ic" NAME="CustomerControllerTest.getNominee_success Coverage Results" MODIFIED="1770619902040" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest_unblockCustomer_success.ic" NAME="AdminCustomerControllerTest.unblockCustomer_success Coverage Results" MODIFIED="1770618724043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationServiceImplTest_registerCustomer_success_withNominee.ic" NAME="CustomerRegistrationServiceImplTest.registerCustomer_success_withNominee Coverage Results" MODIFIED="1770369663193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$BusinessExceptionTest.ic" NAME="BusinessExceptionTest Coverage Results" MODIFIED="1770708348259" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.exception.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationServiceImplTest_customerRegister_success_withNominee.ic" NAME="CustomerRegistrationServiceImplTest.customerRegister_success_withNominee Coverage Results" MODIFIED="1770379059872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationServiceImplTest_customerRegister_success_noNominne_branch.ic" NAME="CustomerRegistrationServiceImplTest.customerRegister_success_noNominne_branch Coverage Results" MODIFIED="1770379027769" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest_getAllCustomersByID_success.ic" NAME="AdminCustomerControllerTest.getAllCustomersByID_success Coverage Results" MODIFIED="1770617332479" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminAuthControllerTest.ic" NAME="AdminAuthControllerTest Coverage Results" MODIFIED="1771302639349" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationControllerTest.ic" NAME="CustomerRegistrationControllerTest Coverage Results" MODIFIED="1771302795102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerControllerTest.ic" NAME="CustomerControllerTest Coverage Results" MODIFIED="1771302820920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationServiceImplTest.ic" NAME="CustomerRegistrationServiceImplTest Coverage Results" MODIFIED="1770718777641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.service.impl.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerServiceImplTest_getCustomerDetailsById_success.ic" NAME="InternalCustomerServiceImplTest.getCustomerDetailsById_success Coverage Results" MODIFIED="1770629656271" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.service.impl.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerServiceImplTest.ic" NAME="InternalCustomerServiceImplTest Coverage Results" MODIFIED="1770630785642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.service.impl.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest.ic" NAME="AdminCustomerControllerTest Coverage Results" MODIFIED="1771302733458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerControllerTest_getCustomerContactById_success.ic" NAME="InternalCustomerControllerTest.getCustomerContactById_success Coverage Results" MODIFIED="1770623059451" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest_updateCustomer_success.ic" NAME="AdminCustomerControllerTest.updateCustomer_success Coverage Results" MODIFIED="1770619092068" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$SecurityConfigTest.ic" NAME="SecurityConfigTest Coverage Results" MODIFIED="1770633581034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.config.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$GlobalExceptionHandlerUnitTest_handleMethodArgumentNotValid.ic" NAME="GlobalExceptionHandlerUnitTest.handleMethodArgumentNotValid Coverage Results" MODIFIED="1770701018320" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.exception.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerValidatorTest.ic" NAME="CustomerValidatorTest Coverage Results" MODIFIED="1771302979143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.validation.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerControllerTest_getIfscByAccountNumber_success.ic" NAME="InternalCustomerControllerTest.getIfscByAccountNumber_success Coverage Results" MODIFIED="1770623329318" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminAuthControllerTest_login_success.ic" NAME="AdminAuthControllerTest.login_success Coverage Results" MODIFIED="1770611098655" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$java_in_customer_service.ic" NAME="java in customer_service Coverage Results" MODIFIED="1770632187951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/customer_service$JwtUtilTest.ic" NAME="JwtUtilTest Coverage Results" MODIFIED="1770635363605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.security.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerServiceImplTest.ic" NAME="AdminCustomerServiceImplTest Coverage Results" MODIFIED="1770718380549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.service.impl.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerControllerTest.ic" NAME="InternalCustomerControllerTest Coverage Results" MODIFIED="1771302890911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$InternalCustomerControllerTest_getCustomerSummaryById_success.ic" NAME="InternalCustomerControllerTest.getCustomerSummaryById_success Coverage Results" MODIFIED="1770622515734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$customer_service_in_customer_service.ic" NAME="customer_service in customer_service Coverage Results" MODIFIED="1770623660049" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/customer_service$GlobalExceptionHandlerUnitTest.ic" NAME="GlobalExceptionHandlerUnitTest Coverage Results" MODIFIED="1770701543620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.exception.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationServiceImplTest_registerCustomer_success.ic" NAME="CustomerRegistrationServiceImplTest.registerCustomer_success Coverage Results" MODIFIED="1770363639800" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$AdminCustomerControllerTest_kycStatus_success.ic" NAME="AdminCustomerControllerTest.kycStatus_success Coverage Results" MODIFIED="1770618093808" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$GlobalExceptionHandlerTest_handleBusinessException_withErrorCode.ic" NAME="GlobalExceptionHandlerTest.handleBusinessException_withErrorCode Coverage Results" MODIFIED="1770705330375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.exception.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/customer_service$CustomerRegistrationControllerTest_register_validationFailure.ic" NAME="CustomerRegistrationControllerTest.register_validationFailure Coverage Results" MODIFIED="1770620718863" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.bank.customer_service.controller.*</FILTER>
+    </SUITE>
+  </component>
+</project>
