@@ -5,10 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
+
 @Entity
 @Table(name = "admin_users")
-@Getter @Setter @Builder
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminUser {
 
     @Id

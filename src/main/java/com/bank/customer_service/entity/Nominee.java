@@ -21,7 +21,6 @@ public class Nominee {
     @Id
     @GeneratedValue
     private UUID id;
-
     private UUID customerId;
     private String name;
     private String relation;

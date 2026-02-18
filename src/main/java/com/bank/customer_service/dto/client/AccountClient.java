@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "ACCOUNT-SERVICE",
-        url = "http://localhost:8082",   // change if using service discovery
+        url = "http://localhost:8082",
         path = "/api/internal/accounts"
 )
 public interface AccountClient {

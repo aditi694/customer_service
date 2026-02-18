@@ -38,8 +38,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
     private final NomineeRepository nomineeRepository;
     private final BankBranchRepository bankBranchRepo;
 
-
-
     private static final String ACCOUNT_SERVICE_URL =
             "http://localhost:8082/api/internal/accounts/create";
 
@@ -168,8 +166,6 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 //            );
 //        }
 //    }
-
-
 
     @Override
     public List<AdminCustomerSummary> getAllCustomers() {
