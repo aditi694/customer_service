@@ -6,11 +6,13 @@ import com.bank.customer_service.exception.BusinessException;
 import com.bank.customer_service.repository.CustomerRepository;
 import com.bank.customer_service.service.InternalCustomerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -21,8 +23,9 @@ public class InternalCustomerServiceImpl implements InternalCustomerService {
     @Override
     public CustomerDetailResponse getCustomerDetails(UUID customerId) {
 
-        System.out.println("=== FETCHING CUSTOMER DETAILS ===");
-        System.out.println("Customer ID: " + customerId);
+//        System.out.println("=== FETCHING CUSTOMER DETAILS ===");
+//        System.out.println("Customer ID: " + customerId);
+        log.info("Fetching customer details for ID={}", customerId);
 
         Customer customer = customerRepo.findById(customerId)
                 .orElseThrow(() -> BusinessException.notFound("Customer not found"));

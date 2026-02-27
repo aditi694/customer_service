@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-        name = "ACCOUNT-SERVICE",
-        url = "http://localhost:8082",
+        name = "account-service",
+        url = "${account.service.url}",
         path = "/api/internal/accounts"
 )
 public interface AccountClient {
