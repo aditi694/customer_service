@@ -80,11 +80,11 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
         syncWithAccountService(
                 accountNumber,
                 savedCustomer.getId().toString(),
+                savedCustomer.getFullName(),
                 req.getAccountType() != null ? req.getAccountType() : "SAVINGS",
                 passwordHash,
                 branch.getIfscCode()
         );
-
 //        log.info("Customer registration completed successfully");
 
         return CustomerRegistrationResponse.builder()
@@ -153,36 +153,29 @@ public class CustomerRegistrationServiceImpl implements CustomerRegistrationServ
     private void syncWithAccountService(
             String accountNumber,
             String customerId,
+            String accountHolderName,
             String accountType,
             String passwordHash,
             String ifscCode) {
 
-        try {
-            AccountSyncRequest request = AccountSyncRequest.builder()
-                    .accountNumber(accountNumber)
-                    .customerId(customerId)
-                    .accountType(accountType.toUpperCase())
-                    .passwordHash(passwordHash)
-                    .status("ACTIVE")
-                    .balance(0.0)
-                    .primaryAccount(true)
-                    .ifscCode(ifscCode)
-                    .build();
+        AccountSyncRequest request = AccountSyncRequest.builder()
+                .accountHolderName(accountHolderName)   // ✅ FIX
+                .accountNumber(accountNumber)
+                .customerId(customerId)
+                .accountType(accountType.toUpperCase())
+                .passwordHash(passwordHash)
+                .status("ACTIVE")
+                .balance(0.0)
+                .primaryAccount(true)
+                .ifscCode(ifscCode)
+                .build();
 
-            log.error("FEIGN → Sending IFSC = {}", ifscCode);
+        log.info("FEIGN → Sending account holder name = {}", accountHolderName);
 
-            accountClient.createAccount(request);
+        accountClient.createAccount(request);
 
-            log.info("✅ Account synced via Feign successfully");
-
-        } catch (Exception e) {
-            log.error("❌ Feign failed while syncing account", e);
-            throw BusinessException.internal(
-                    "Customer created but account creation failed"
-            );
-        }
+        log.info("✅ Account synced via Feign successfully");
     }
-
 
     private String generateAccountNumber() {
         return "AC" + System.currentTimeMillis();
