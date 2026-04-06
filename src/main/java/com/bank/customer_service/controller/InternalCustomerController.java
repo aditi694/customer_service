@@ -69,4 +69,10 @@ public class InternalCustomerController {
                 .address(branch.getBranchName() + ", " + branch.getCity())
                 .build();
     }
+    @GetMapping("/email")
+    public String getEmail(@RequestParam UUID customerId) {
+        return customerRepo.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"))
+                .getEmail();
+    }
 }
