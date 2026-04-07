@@ -75,4 +75,25 @@ public class InternalCustomerController {
                 .orElseThrow(() -> new RuntimeException("Customer not found"))
                 .getEmail();
     }
+    @GetMapping("/{customerId}/name")
+    public String getCustomerName(@PathVariable UUID customerId) {
+        return customerRepo.findById(customerId)
+                .orElseThrow()
+                .getFullName();
+    }
+
+    @GetMapping("/account/{accountNumber}/name")
+    public String getCustomerNameByAccount(@PathVariable String accountNumber) {
+        return customerRepo.findByAccountNumber(accountNumber)
+                .orElseThrow()
+                .getFullName();
+    }
+
+    @GetMapping("/account/{accountNumber}/email")
+    public String getEmailByAccount(@PathVariable String accountNumber) {
+        accountNumber = accountNumber.trim().toUpperCase();
+        return customerRepo.findByAccountNumberIgnoreCase(accountNumber)
+                .orElseThrow(() -> BusinessException.notFound("Customer not found"))
+                .getEmail();
+    }
 }
