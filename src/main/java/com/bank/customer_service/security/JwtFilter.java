@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils; // Import this
 
 import java.io.IOException;
 import java.util.List;
@@ -25,11 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest req,
-            HttpServletResponse res,
-            FilterChain chain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
 
         String path = req.getRequestURI();
 
@@ -41,15 +40,27 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String header = req.getHeader("Authorization");
+        // 2. Extract token from Cookie using WebUtils (No loop needed)
+        String token = null;
+        Cookie cookie = WebUtils.getCookie(req, "token");
+        System.out.println("COOKIE: " + (cookie != null ? cookie.getValue() : "NULL"));
+        if (cookie != null) {
+            token = cookie.getValue();
+            logger.info("Found token in cookie: " + token);
+        } else {
+            String header = req.getHeader("Authorization");
+            if (header != null && header.startsWith("Bearer ")) {
+                token = header.substring(7);
+            }
+        }
 
-        if (header == null || !header.startsWith("Bearer ")) {
-            chain.doFilter(req, res);
+        if (token == null) {
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.getWriter().write("{\"message\":\"Authorization token is missing\"}");
             return;
         }
 
         try {
-            String token = header.substring(7);
             Claims claims = jwtUtil.parse(token);
 
             String customerId = claims.get("customerId", String.class);
@@ -75,7 +86,6 @@ public class JwtFilter extends OncePerRequestFilter {
             System.err.println("❌ Customer Service JWT Auth Failed: " + ex.getMessage());
             SecurityContextHolder.clearContext();
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            res.setContentType("application/json");
             res.getWriter().write("{\"message\":\"Invalid or expired token\",\"status\":401}");
         }
     }
